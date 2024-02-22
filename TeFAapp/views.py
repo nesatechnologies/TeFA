@@ -1,7 +1,115 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from .models import *
+
+from datetime import datetime
 
 # Create your views here.
 def home(request):
+    # home page
+    # inputing user data from employee side form
+    if request.method == 'POST':
+        phone_no = request.POST.get('phone_no')
+        name = request.POST.get('name')
+        course = request.POST.get('course')
+        email = request.POST.get('email')
+        place = request.POST.get('place')
+        lead_date = request.POST.get('lead_date')
+        remark = request.POST.get('remark')
+
+        ######  control_no part operations ######
+        # Get the last row based on the primary key
+        last_row = Lead.objects.last()
+        if last_row:
+            # Access attributes of the last row
+            print("Last row:", last_row.control_no)
+            control_no = last_row.control_no
+            control_no += 1
+        else:
+            print("Table is empty")
+            control_no = 5000
+
+
+        ######### starting lead_no part ###########
+        ## using entered 'lead_date' can used to create special type of code for "lead_no".
+        ## month-year-Lnumber eg : feb-24-L1
+
+
+        ### month first three letter taking part
+        print(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lead_date = {lead_date}")
+        # Parse the date string
+        date_string = lead_date
+        date_object = datetime.strptime(date_string, "%Y-%m-%d")
+        # Get the English month name first three letters using %b
+        english_month = date_object.strftime("%b")
+        # print("English month:", english_month)
+
+        #### year last two digit taking part
+        # Parse the date string
+        date_string = lead_date
+        date_object = datetime.strptime(date_string, "%Y-%m-%d")
+        # Get the last two digits of the year
+        last_two_digits_year = date_object.strftime("%y")
+        print("Last two digits of the year:", last_two_digits_year)
+
+        ### retrieve last updated row from data base and compire to done operation
+        if last_row:
+            # Access "lead date" attributes of the last row.
+            lead_given_date1 =last_row.lead_given_date
+            print("past lead_given_date:", lead_given_date1)
+
+            # Parse the date strings into datetime objects
+            print(type(lead_given_date1))
+            print(type(lead_date))
+            lead_given_date1_parse = datetime.strptime(str(lead_given_date1), "%Y-%m-%d")
+            lead_date_parse = datetime.strptime(lead_date, "%Y-%m-%d")
+            print(lead_given_date1_parse)
+            print(lead_date_parse)
+
+            ## comparing the previous row lead_date and new entered one lead_date
+            if lead_given_date1_parse == lead_date_parse:
+                print("same")
+                # in the case of same date old one same lead_no is giving
+                lead_no = last_row.lead_no
+            else:
+
+                try:
+                    ### check data before entered if lend date already entered take same lead_no( not only checking just previous row )
+                    print("different")
+                    lended_date_details = Lead.objects.get(lead_given_date = lead_date)
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                    print(lended_date_details.lead_no)
+                    print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+                    lead_no = lended_date_details.lead_no
+
+                except:
+                    print("different")
+                    # split to a list to compire its month and year
+                    x = str(lead_given_date1_parse).split("-")
+                    y = str(lead_date_parse).split("-")
+                    print(x)
+                    print(y)
+                    # in the case of different year or month compired to previous one just set val =1
+                    if x[0] != y[0] or x[1] != y[1]:
+                        val = 1
+                        lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
+                    else:
+                        # in the case of previous and new lend date month & year same
+                        bfore_lead_no= last_row.lead_no
+                        print(type(bfore_lead_no))
+                        # taking number from previous lend no from last position and add 1 to it
+                        print(bfore_lead_no[-1])
+                        a = bfore_lead_no[-1]
+                        val = int(a) + 1
+                        lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
+        else:
+            val = 1
+            lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
+
+        # lead_no =english_month+'-'+last_two_digits_year+'-'+'L'+str(val)
+
+        data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no)
+        data.save()
+        return redirect('home')
     return render(request, 'home.html')
 def conformed(request):
     return render(request, 'conformed.html')

@@ -41,3 +41,5 @@ class Folloup(models.Model):
     def __str__(self):
         return '{}'.format(self.control_no)
 
+
+
