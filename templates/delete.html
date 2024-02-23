@@ -1,0 +1,6 @@
+<form method="post">
+  {% csrf_token %}
+  <h1>do you want to delete {{data.lead_no}} ?</h1>
+  <a href="{% url 'home' %}">cancel</a>
+  <input type="submit">
+</form>

@@ -1,6 +1,40 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<h1 style="color:blue;">conform</h1>
 
+    {% if data %}
+        <h4><u>users Table</u></h4>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>CONTROL NO</th>
+                <th>LEAD NO</th>
+                <th>LEAD DATE</th>
+                <th>ADDED DATE</th>
+                <th>NAME</th>
+                <th>COURSE</th>
+                <th>EMAIL</th>
+                <th>PLACE</th>
+                <th>REMARK</th>
+                <th>PHONE</th>
+            </tr>
+
+            {% for i in data %}
+            <tr>
+                <td>{{forloop.counter}}</td>
+                <td>{{i.lead.control_no}}</td>
+                <td>{{i.lead.lead_no}}</td>
+                <td>{{i.lead.lead_given_date}}</td>
+                <td>{{i.lead.date_time_added}}</td>
+                <td>{{i.lead.name}}</td>
+                <td>{{i.lead.course}}</td>
+                <td>{{i.lead.email}}</td>
+                <td>{{i.lead.place}}</td>
+                <td>{{i.lead.remark}}</td>
+                <td>{{i.lead.phone_no}}</td>
+
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 {% endblock %}

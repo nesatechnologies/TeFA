@@ -5,7 +5,24 @@ from datetime import datetime
 
 # Create your views here.
 def home(request):
-    # home page
+    data = Lead.objects.filter(status=0)
+    no_contact = Lead.objects.all().count()
+    wait_call = Lead.objects.filter(status=0).count()
+    conformed = Lead.objects.filter(status=1).count()
+    need_following = Lead.objects.filter(status=2).count()
+    denied = Lead.objects.filter(status=3).count()
+    return render(request, 'home.html',{'data':data, 'wait_call':wait_call, 'no_contact':no_contact,
+                                        'conformed':conformed, 'need_following':need_following, 'denied':denied})
+def conformed(request):
+    data = Calldetails.objects.filter(lead__status=1)
+    return render(request, 'conformed.html', {'data':data})
+def need_following(request):
+    data = Calldetails.objects.filter(lead__status=2)
+    return render(request, 'need_following.html', {'data':data})
+def denied(request):
+    data = Calldetails.objects.filter(lead__status=3)
+    return render(request, 'denied.html', {'data':data})
+def add_customer(request):
     # inputing user data from employee side form
     if request.method == 'POST':
         phone_no = request.POST.get('phone_no')
@@ -110,12 +127,12 @@ def home(request):
         data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no)
         data.save()
         return redirect('home')
-    return render(request, 'home.html')
-def conformed(request):
-    return render(request, 'conformed.html')
-def need_following(request):
-    return render(request, 'need_following.html')
-def denied(request):
-    return render(request, 'denied.html')
-def users(request):
-    return render(request, 'users.html')
+    return render(request, 'add_customer.html')
+
+def delete(request, id):
+    if request.method == 'POST':
+        data = Lead.objects.get(id=id)
+        data.delete()
+        return redirect('/')
+    data = Lead.objects.filter(id=id)
+    return render(request, 'delete.html',{'data':data})
