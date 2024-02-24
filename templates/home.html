@@ -178,7 +178,7 @@
             <td>{{i.remark}}</td>
             <td>{{i.phone_no}}</td>
 
-            <td><a href="#"> <input type="button" value="call"> </a></td>
+            <td><a href="{% url 'call' i.id %}"> <input type="button" value="call"> </a></td>
             <td> <a href="{% url 'delete' i.id %}"> <input type="button" value="delete"> </a></td>
         </tr>
         {% endfor %}

@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from .models import *
 
 from datetime import datetime
+from django.contrib import auth,messages
+
 
 # Create your views here.
 def home(request):
@@ -133,6 +135,71 @@ def delete(request, id):
     if request.method == 'POST':
         data = Lead.objects.get(id=id)
         data.delete()
-        return redirect('/')
+        return redirect('home')
     data = Lead.objects.filter(id=id)
     return render(request, 'delete.html',{'data':data})
+
+def login(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        if username != '' and password != '':
+            if Employee_details.objects.filter(user_name=username, password=password).exists():
+                data = Employee_details.objects.filter(user_name=username, password=password).values('name', 'emp_id', 'id').first()
+                request.session['name'] = data['name']
+                request.session['emp_id'] = data['emp_id']
+                request.session['username'] = username
+                request.session['password'] = password
+                request.session['uid'] = data['id']
+                return redirect('home')
+            else:
+                return render(request, 'register_user.html', {'msg': "invalid"})
+        else:
+            messages.info(request, "enter all inputs")
+            return redirect('login')
+    return render(request, 'login.html')
+
+def register(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        name = request.POST['name']
+        empid = request.POST['empid']
+        password = request.POST['password']
+        cpassword = request.POST['cpassword']
+        if username != '' and password != '' and cpassword !='' and empid !='' and name !='':
+            if password == cpassword:
+                if Employee_details.objects.filter(user_name=username).exists():
+                    messages.info(request, "username is Already taken")
+                elif Employee_details.objects.filter(emp_id=empid).exists():
+                    messages.info(request, "Employee id is Already taken")
+                else:
+                    user = Employee_details(user_name=username,password=password,name=name,emp_id=empid)
+                    user.save()
+                    messages.info(request, "user created")
+            else:
+                messages.info(request, "passwords not matched")
+                return redirect('register')
+        else:
+            messages.info(request, "enter all inputs")
+            return redirect('register')
+    return render(request, 'register.html')
+
+def logout(request):
+    del request.session['name']
+    del request.session['emp_id']
+    del request.session['username']
+    del request.session['password']
+    del request.session['uid']
+    return redirect('login')
+
+def call(request,id):
+    if request.method == 'POST':
+        name = request.POST['name']
+        emp_id = request.POST['emp_id']
+        called_meadium = request.POST['called_meadium']
+        remark = request.POST['remark']
+
+
+    data = Lead.objects.filter(id=id)
+    data1 = Employee_details.objects.all()
+    return render(request, 'call.html',{'data':data,'data1':data1})

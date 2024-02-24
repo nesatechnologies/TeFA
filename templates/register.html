@@ -1,3 +1,6 @@
+{% extends 'base_for_login.html' %}
+{% block content %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +8,21 @@
     <title>Title</title>
 </head>
 <body>
-
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" placeholder="enter the username" name="username"><br>
+            <input type="text" placeholder="enter the your name" name="name"><br>
+            <input type="text" placeholder="enter the employee id" name="empid"><br>
+            <input type="password" placeholder="enter the password" name="password"><br>
+            <input type="password" placeholder="conform the password" name="cpassword"><br>
+            <input type="submit">
+        </form>
+        {% for msg in messages %}
+        {{msg}}
+        {% endfor %}
+    </div>
 </body>
 </html>
+{% endblock %}
+

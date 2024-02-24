@@ -3,6 +3,7 @@ import datetime
 from django.db import models
 from django.core.validators import RegexValidator
 
+
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z\-]*$', 'Only alphanumeric characters are allowed.')
 
 # Create your models here.
@@ -41,4 +42,11 @@ class Folloup(models.Model):
         return '{}'.format(self.control_no)
 
 
+class Employee_details(models.Model):
+    user_name = models.CharField(max_length=20)
+    password = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)
+    emp_id = models.CharField(max_length=10)
+    def __str__(self):
+        return '{} - {} '.format(self.emp_id, self.name)
 
