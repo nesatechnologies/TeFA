@@ -4,8 +4,11 @@ from .models import *
 from datetime import datetime
 from django.contrib import auth,messages
 
+from .decorators import session_login_required
+
 
 # Create your views here.
+@session_login_required
 def home(request):
     data = Lead.objects.filter(status=0)
     no_contact = Lead.objects.all().count()
@@ -20,7 +23,8 @@ def conformed(request):
     return render(request, 'conformed.html', {'data':data})
 def need_following(request):
     data = Calldetails.objects.filter(lead__status=2)
-    return render(request, 'need_following.html', {'data':data})
+    data1 = Folloup.objects.all()
+    return render(request, 'need_following.html', {'data':data,'data1':data1})
 def denied(request):
     data = Calldetails.objects.filter(lead__status=3)
     return render(request, 'denied.html', {'data':data})
@@ -146,6 +150,7 @@ def login(request):
         if username != '' and password != '':
             if Employee_details.objects.filter(user_name=username, password=password).exists():
                 data = Employee_details.objects.filter(user_name=username, password=password).values('name', 'emp_id', 'id').first()
+                print(data)
                 request.session['name'] = data['name']
                 request.session['emp_id'] = data['emp_id']
                 request.session['username'] = username
@@ -194,12 +199,30 @@ def logout(request):
 
 def call(request,id):
     if request.method == 'POST':
-        name = request.POST['name']
-        emp_id = request.POST['emp_id']
+        selected_value = request.POST['name']
+        if selected_value:
+            name, emp_id = selected_value.split('|')
+            # Now you have name and emp_id separately
+            # Do whatever you want with these values
+        else:
+            # Handle case when no option is selected
+            pass
+        status = request.POST['status']
         called_meadium = request.POST['called_meadium']
-        remark = request.POST['remark']
+        emp_remark = request.POST['remark']
+        lead = Lead.objects.get(id=id)
+        calls_made= Employee_details.objects.get(emp_id=emp_id)
+        calls_updated_id = request.session.get('uid')
+        calls_updated= Employee_details.objects.get(id=calls_updated_id)
 
-
+        userdata = Calldetails(lead=lead, calls_made=calls_made, emp_remark=emp_remark, called_meadium=called_meadium, calls_updated=calls_updated)
+        userdata.save()
+        lead.status = status
+        lead.save()
+        return redirect('/')
     data = Lead.objects.filter(id=id)
     data1 = Employee_details.objects.all()
     return render(request, 'call.html',{'data':data,'data1':data1})
+
+
+

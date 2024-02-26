@@ -1,7 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid white;
+  border-collapse: collapse;
+  padding: 15px;
 
+}
+</style>
+</head>
+<body>
     {% if data %}
         <h4><u>users Table</u></h4>
         <table>
@@ -17,6 +29,8 @@
                 <th>PLACE</th>
                 <th>REMARK</th>
                 <th>PHONE</th>
+                <th>NO OF FOLLOWING</th>
+                <th>CALL</th>
             </tr>
 
             {% for i in data %}
@@ -32,10 +46,13 @@
                 <td>{{i.lead.place}}</td>
                 <td>{{i.lead.remark}}</td>
                 <td>{{i.lead.phone_no}}</td>
+                <td>{{i.followups}}</td>
+                <td><a href="{% url 'call' i.id %}"> <input type="button" value="call"> </a></td>
 
             </tr>
             {% endfor %}
         </table>
     {% endif %}
-
+</body>
+</html>
 {% endblock %}
