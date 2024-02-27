@@ -37,16 +37,21 @@ class Calldetails(models.Model):
     called_datetime = models.DateField(("Date"), default=datetime.date.today)
     called_meadium = models.CharField(max_length=10)
     calls_updated = models.ForeignKey(Employee_details, on_delete=models.CASCADE, related_name='calls_updated')
+    no_of_followups = models.IntegerField(default=1)
     def __str__(self):
-        return '{} - {} - {}'.format(self.lead.control_no, self.lead.status, self.calls_updated)
+        return '{} - {} - {} - {}'.format(self.lead.control_no, self.lead.status, self.calls_updated, self.no_of_followups)
 
 class Folloup(models.Model):
-    call_detail = models.ForeignKey(Calldetails, on_delete=models.CASCADE)
+    calldetails = models.ForeignKey(Calldetails, on_delete=models.CASCADE)
     remark = models.CharField(max_length=250)
     followups = models.IntegerField(default=0)
 
-    def __str__(self):
-        return '{} - {} - {}'.format(self.call_detail.lead.control_no, self.remark, self.followups)
+    calls_made = models.ForeignKey(Employee_details, on_delete=models.CASCADE, related_name='follo_calls_made', default=None)
+    called_datetime = models.DateField(("Date"), default=datetime.date.today)
+    called_meadium = models.CharField(max_length=10, default='phone')
+    calls_updated = models.ForeignKey(Employee_details, on_delete=models.CASCADE, related_name='follo_calls_updated', default=None)
+
+
 
 
 

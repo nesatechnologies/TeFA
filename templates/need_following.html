@@ -29,7 +29,7 @@ table, th, td {
                 <th>PLACE</th>
                 <th>REMARK</th>
                 <th>PHONE</th>
-                <th>NO OF FOLLOWING</th>
+                <th>NO OF FOLLOWUPS</th>
                 <th>CALL</th>
             </tr>
 
@@ -46,8 +46,8 @@ table, th, td {
                 <td>{{i.lead.place}}</td>
                 <td>{{i.lead.remark}}</td>
                 <td>{{i.lead.phone_no}}</td>
-                <td>{{i.followups}}</td>
-                <td><a href="{% url 'call' i.id %}"> <input type="button" value="call"> </a></td>
+                <td><a href="{% url 'followup_actions' i.id %}">{{i.no_of_followups}}</a></td>
+                <td><a href="{% url 'followup' i.id %}"> <input type="button" value="call"> </a></td>
 
             </tr>
             {% endfor %}

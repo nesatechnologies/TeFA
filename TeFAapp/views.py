@@ -23,8 +23,7 @@ def conformed(request):
     return render(request, 'conformed.html', {'data':data})
 def need_following(request):
     data = Calldetails.objects.filter(lead__status=2)
-    data1 = Folloup.objects.all()
-    return render(request, 'need_following.html', {'data':data,'data1':data1})
+    return render(request, 'need_following.html', {'data':data})
 def denied(request):
     data = Calldetails.objects.filter(lead__status=3)
     return render(request, 'denied.html', {'data':data})
@@ -223,6 +222,47 @@ def call(request,id):
     data = Lead.objects.filter(id=id)
     data1 = Employee_details.objects.all()
     return render(request, 'call.html',{'data':data,'data1':data1})
+
+def followup(request, id):
+    if request.method == 'POST':
+        selected_value = request.POST['name']
+        if selected_value:
+            name, emp_id = selected_value.split('|')
+            # Now you have name and emp_id separately
+            # Do whatever you want with these values
+        else:
+            # Handle case when no option is selected
+            pass
+        status = request.POST['status']
+
+        called_meadium = request.POST['called_meadium']
+        remark = request.POST['remark']
+
+        calldetails = Calldetails.objects.get(id=id)
+        calls_made= Employee_details.objects.get(emp_id=emp_id)
+        calls_updated_id = request.session.get('uid')
+        calls_updated= Employee_details.objects.get(id=calls_updated_id)
+
+
+        userdata = Folloup(calldetails=calldetails, remark=remark, called_meadium=called_meadium, calls_made=calls_made, calls_updated=calls_updated)
+        userdata.save()
+
+        current_followups = calldetails.no_of_followups
+        calldetails.no_of_followups = current_followups + 1
+        calldetails.save()
+
+        calldetails.lead.status = status
+        calldetails.lead.save()
+        return redirect('/')
+    data = Calldetails.objects.filter(id=id)
+    data1 = Employee_details.objects.all()
+    return render(request, 'folloup.html',{'data':data,'data1':data1})
+
+def followup_actions(request,id):
+    data = Folloup.objects.filter(calldetails__id = id)
+    data1 = Calldetails.objects.get(id=id)
+    print(data1)
+    return render(request,'followup_actions.html',{'data':data,'data1':data1})
 
 
 

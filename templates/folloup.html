@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Call page</title>
+</head>
+<body>
+    <div class="container">
+        {% for i in data %}
+        <form method="post">
+            {% csrf_token %}
+            <input type="text" name="control_no" value="{{i.lead.control_no}}" disabled><br>
+            <input type="text" name="control_no" value="{{i.lead.name}}" disabled><br>
+            <select name="name" id="name">
+              <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
+              {% for j in data1 %}
+              <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
+              {% endfor %}
+            </select><br>
+            <select name="called_meadium" id="called_meadium">
+              <option value="phone">Phone</option>
+              <option value="email">Email</option>
+            </select><br>
+            <select name="status" id="status">
+              <option value="1">CONFORMED</option>
+              <option value="2">NEED FOLLOWING</option>
+              <option value="3">DENIED</option>
+            </select><br>
+            <input type="text" placeholder="Enter the Remark" name="remark"><br>
+            <input type="submit">
+        </form>
+        {% endfor %}
+        {% for msg in messages %}
+        {{msg}}
+        {% endfor %}
+    </div>
+</body>
+</html>
+{% endblock %}
+
