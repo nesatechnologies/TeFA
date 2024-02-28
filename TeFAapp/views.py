@@ -6,6 +6,9 @@ from django.contrib import auth,messages
 
 from .decorators import session_login_required
 
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
 
 # Create your views here.
 @session_login_required
@@ -218,6 +221,7 @@ def call(request,id):
         userdata.save()
         lead.status = status
         lead.save()
+        # Redirect to the home page with refresh parameter
         return redirect('/')
     data = Lead.objects.filter(id=id)
     data1 = Employee_details.objects.all()
@@ -240,8 +244,12 @@ def followup(request, id):
 
         calldetails = Calldetails.objects.get(id=id)
         calls_made= Employee_details.objects.get(emp_id=emp_id)
+        print("%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$")
+        print(calls_made)
+        print("%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$")
         calls_updated_id = request.session.get('uid')
         calls_updated= Employee_details.objects.get(id=calls_updated_id)
+        print(calls_updated)
 
 
         userdata = Folloup(calldetails=calldetails, remark=remark, called_meadium=called_meadium, calls_made=calls_made, calls_updated=calls_updated)
@@ -261,7 +269,6 @@ def followup(request, id):
 def followup_actions(request,id):
     data = Folloup.objects.filter(calldetails__id = id)
     data1 = Calldetails.objects.get(id=id)
-    print(data1)
     return render(request,'followup_actions.html',{'data':data,'data1':data1})
 
 

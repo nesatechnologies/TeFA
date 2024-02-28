@@ -14,7 +14,7 @@ table, th, td {
 </style>
 </head>
 <body>
-    {% if data %}
+    {% if data1 %}
         <h4><u>Followups Table</u></h4>
         <table>
             <tr>
@@ -26,13 +26,23 @@ table, th, td {
                 <th>UPDATED BY</th>
             </tr>
 
+
+            <tr>
+                <td>{{1}}</td>
+                <td>{{data1.emp_remark}}</td>
+                <td>{{data1.called_datetime}}</td>
+                <td>{{data1.called_meadium}}</td>
+                <td>{{data1.calls_made.name}}</td>
+                <td>{{data1.calls_updated.name}}</td>
+            </tr>
+
             {% for i in data %}
             <tr>
-                <td>{{forloop.counter}}</td>
+                <td>{{forloop.counter|add:1}}</td>
                 <td>{{i.remark}}</td>
                 <td>{{i.called_datetime}}</td>
                 <td>{{i.called_meadium}}</td>
-                <td>{{i.calls_updated.name}}</td>
+                <td>{{i.calls_made.name}}</td>
                 <td>{{i.calls_updated.name}}</td>
             </tr>
             {% endfor %}
