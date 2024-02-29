@@ -13,4 +13,5 @@ urlpatterns = [
     path('call/<int:id>/', views.call, name='call'),
     path('followup/<int:id>/', views.followup, name='followup'),
     path('followup_actions/<int:id>/', views.followup_actions, name='followup_actions'),
+    path('upload_csv/', views.upload_csv, name='upload_csv'),
     ]

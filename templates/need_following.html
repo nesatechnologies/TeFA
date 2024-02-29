@@ -5,36 +5,100 @@
 <html>
 <head>
 <style>
-table, th, td {
-  border: 1px solid white;
-  border-collapse: collapse;
-  padding: 15px;
+    table, th, td {
+      border: 1px solid white;
+      border-collapse: collapse;
+      padding: 15px;
 
-}
+    }
+          /* Popup container styles */
+          .popup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
 </style>
 </head>
 <body>
+
+<!-- Popup container -->
+<div id="callPopup" class="popup">
+  <div class="popup-content">
+    <!-- Content will be dynamically loaded here -->
+  </div>
+</div>
+
     {% if data %}
         <h4><u>users Table</u></h4>
         <table>
             <tr>
                 <th>ID</th>
-                <th>CONTROL NO</th>
+                <th>
+                    <p>
+                        <abbr title="CONTROL NO">CNT NO</abbr>
+                    </p>
+                </th>
                 <th>LEAD NO</th>
                 <th>LEAD DATE</th>
                 <th>ADDED DATE</th>
                 <th>NAME</th>
                 <th>COURSE</th>
-                <th>EMAIL</th>
                 <th>PLACE</th>
                 <th>REMARK</th>
                 <th>PHONE</th>
-                <th>NO OF FOLLOWUPS</th>
-                <th>CALL</th>
+                <th>EMAIL</th>
+
+                <th>
+                    <p>
+                        <abbr title="Number of Followups">N/F</abbr>
+                    </p>
+                </th>
+                <th>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                      <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                    </svg>
+                    <i class="bi bi-plus"></i>
+                </th>
             </tr>
 
             {% for i in data %}
             <tr>
+
+
+                <td> <input type="button" value={{i.no_of_followups}} onclick="openPopup({{ i.id }})"> </td>
+
+                <td>
+                    <a onclick="followopenPopup({{ i.id }})">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                        </svg>
+                        <i class="bi bi-arrow-right-circle"></i>
+                    </a>
+                </td>
+
+
+
                 <td>{{forloop.counter}}</td>
                 <td>{{i.lead.control_no}}</td>
                 <td>{{i.lead.lead_no}}</td>
@@ -42,17 +106,82 @@ table, th, td {
                 <td>{{i.lead.date_time_added}}</td>
                 <td>{{i.lead.name}}</td>
                 <td>{{i.lead.course}}</td>
-                <td>{{i.lead.email}}</td>
                 <td>{{i.lead.place}}</td>
                 <td>{{i.lead.remark}}</td>
                 <td>{{i.lead.phone_no}}</td>
-                <td><a href="{% url 'followup_actions' i.id %}">{{i.no_of_followups}}</a></td>
-                <td><a href="{% url 'followup' i.id %}"> <input type="button" value="call"> </a></td>
+                <td>{{i.lead.email}}</td>
+
+
 
             </tr>
             {% endfor %}
         </table>
     {% endif %}
+
+
+    <!-- Popup container -->
+    <div id="followcallPopup" class="popup">
+        <div class="popup-content">
+            <!-- Include the content of call.html here -->
+            <div id="followcallForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+<!-- JavaScript code to handle popup functionality -->
+<script>
+  function openPopup(personId) {
+    // Show the popup by setting its display property to "block"
+    document.getElementById('callPopup').style.display = 'block';
+
+    // Fetch details of the specific person using AJAX
+    fetch(`/followup_actions/${personId}`)
+      .then(response => response.text())
+      .then(data => {
+        // Populate the popup content with the fetched data
+        document.querySelector('.popup-content').innerHTML = data;
+      })
+      .catch(error => console.error('Error:', error));
+  }
+
+           function closePopup() {
+                // Hide the popup by setting its display property to "none"
+                document.getElementById('callPopup').style.display = 'none';
+                location.reload();
+              }
+
+              // Close the popup when clicking outside of it (optional)
+              window.onclick = function(event) {
+                if (event.target == document.getElementById('callPopup')) {
+                  closePopup();
+                }
+              }
+
+
+
+
+
+    function followopenPopup(personId) {
+                    // Show the popup
+                    console.log(personId);
+                    $('#followcallForm').show();
+
+                    // Fetch the call form dynamically
+                    $.ajax({
+                        url: `/followup/${personId}/`,
+                        success: function(data) {
+                            $('#callForm').html(data);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching form data:', error);
+                        }
+                    });
+                }
+
+</script>
+
 </body>
 </html>
 {% endblock %}

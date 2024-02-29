@@ -19,6 +19,8 @@ class Lead(models.Model):
     place = models.CharField(max_length=50)
     remark = models.CharField(max_length=250)
     status = models.IntegerField(default=0)
+    source = models.CharField(max_length=100, default='')
+    degree = models.CharField(max_length=250, default='')
     def __str__(self):
         return '{}'.format(self.control_no)
 

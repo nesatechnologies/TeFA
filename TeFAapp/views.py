@@ -6,8 +6,7 @@ from django.contrib import auth,messages
 
 from .decorators import session_login_required
 
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+import csv
 
 
 # Create your views here.
@@ -40,6 +39,8 @@ def add_customer(request):
         place = request.POST.get('place')
         lead_date = request.POST.get('lead_date')
         remark = request.POST.get('remark')
+        source = request.POST.get('source')
+        degree = request.POST.get('degree')
 
         ######  control_no part operations ######
         # Get the last row based on the primary key
@@ -132,7 +133,7 @@ def add_customer(request):
 
         # lead_no =english_month+'-'+last_two_digits_year+'-'+'L'+str(val)
 
-        data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no)
+        data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source, degree=degree)
         data.save()
         return redirect('home')
     return render(request, 'add_customer.html')
@@ -228,7 +229,9 @@ def call(request,id):
     return render(request, 'call.html',{'data':data,'data1':data1})
 
 def followup(request, id):
+    print("%%%%%%%%%%%%%%%%%%%%111111111$$$$$$$$$$$$$$$$$$$$$$")
     if request.method == 'POST':
+        print("%%%%%%%%%%%%%%%%%%%%22222222$$$$$$$$$$$$$$$$$$$$$$")
         selected_value = request.POST['name']
         if selected_value:
             name, emp_id = selected_value.split('|')
@@ -270,6 +273,59 @@ def followup_actions(request,id):
     data = Folloup.objects.filter(calldetails__id = id)
     data1 = Calldetails.objects.get(id=id)
     return render(request,'followup_actions.html',{'data':data,'data1':data1})
+
+def upload_csv(request):
+    message = ""  # Default message
+    csv_data = None  # Default CSV data
+    if request.method == 'POST' and request.FILES.get('csv_file'):
+        csv_file = request.FILES['csv_file']
+        if csv_file.name.endswith('.csv'):
+            # Process the uploaded CSV file
+            try:
+                # Decode and process the CSV file
+                decoded_file = csv_file.read().decode('utf-8')
+                csv_data = csv.reader(decoded_file.splitlines())
+                for row in csv_data:
+                    # Process each row of the CSV file
+                    if row[0] == 'SL.NO':
+                        continue
+                    else:
+                        print(row)
+                        control_no = int(row[1])
+                        lead_no = str(row[2])
+
+                        # Input date string
+                        date_string = str(row[3])
+                        # Parse the date string into a datetime object
+                        date_object = datetime.strptime(date_string, "%d/%m/%Y")
+                        # Format the datetime object in the desired format
+                        formatted_date = date_object.strftime("%Y-%m-%d")
+                        lead_given_date = formatted_date
+
+                        source = str(row[4])
+                        name = str(row[5])
+                        phone_no = int(row[6])
+                        email = (row[7])
+                        place = str(row[8])
+                        degree = str(row[9])
+                        course = str(row[10])
+                        remark = str(row[11])
+
+                        data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
+                                    place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
+                                    degree=degree)
+                        data.save()
+
+
+
+                message = "CSV file uploaded and processed successfully."
+            except Exception as e:
+                message = f"Error processing CSV file: {e}"
+        else:
+            message = "Please upload a valid CSV file."
+    else:
+        message = "No file uploaded."
+    return redirect('/')
 
 
 

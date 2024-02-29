@@ -11,7 +11,7 @@
         {% for i in data %}
         <form id="dynamicForm" method="post">
             {% csrf_token %}
-            <input type="text" name="personId" id="personId" value="{{i.id}}">
+            <input type="hidden" name="personId" id="personId" value="{{i.id}}">
             <input type="text" name="control_no" value="{{i.control_no}}" disabled><br>
             <input type="text" name="control_no" value="{{i.name}}" disabled><br>
             <select name="name" id="name">

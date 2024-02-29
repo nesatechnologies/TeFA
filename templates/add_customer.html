@@ -1,7 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+<h2>Upload CSV File</h2>
+    {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <form action="/upload_csv/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="csv_file" accept=".csv" required>
+        <button type="submit">Upload</button>
+    </form>
 
+<br>
+<br>
+<h2>Upload Details</h2>
 <form method="post">
     {% csrf_token %}
     <div class="row_data">
@@ -25,6 +37,7 @@
             <label for="course">COURSE:</label>
         </div>
         <select name="course" id="course">
+          <option value="">not mentioned</option>
           <option value="A">A</option>
           <option value="B">B</option>
           <option value="C">C</option>
@@ -52,7 +65,7 @@
             <label for="lead_date">LEAD GIVEN DATE:</label>
         </div>
         <div class="val_in">
-            <input type="date" name="lead_date" id="lead_date">
+            <input type="date" name="lead_date" id="lead_date" value="{% now 'Y-m-d' %}">
         </div>
     </div>
     <div class="row_data">
@@ -61,6 +74,22 @@
         </div>
         <div class="val_in">
             <input type="text" name="remark" id="remark">
+        </div>
+    </div>
+    <div class="row_data">
+        <div class="label_data">
+            <label for="remark">SOURCE:</label>
+        </div>
+        <div class="val_in">
+            <input type="text" name="source" id="source">
+        </div>
+    </div>
+    <div class="row_data">
+        <div class="label_data">
+            <label for="remark">DEGREE:</label>
+        </div>
+        <div class="val_in">
+            <input type="text" name="degree" id="degree">
         </div>
     </div>
     <div class="row_data">
