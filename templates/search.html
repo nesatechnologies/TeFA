@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+        <div>
+                <p class="text-center my_search_text">You have searched for: <b>"{{query}}"</b></p>
+        </div>
+        <div class="container">
+                <div class="row mx_auto">
+                    {% for product in products %}
+                        <div class="my_bottom_margin col-9 col-sm-12 col-md-4 xol-lg-4">
+                            <div class="card text-center" style="min-width: 18rem;">
+                                <div class="card_body">
+                                    <p>{{product.control_no}}</p>
+                                    <p>{{product.lead_no}}</p>
+                                    <p>{{product.date_time_added}}</p>
+                                    <p>{{product.lead_given_date}}</p>
+                                    <p>{{product.name}}</p>
+                                    <h4>{{product.course}}</h4>
+                                    <p>{{product.phone_no}}</p>
+                                    <p>{{product.email}}</p>
+                                    <p>{{product.place}}</p>
+                                    <p>{{product.remark}}</p>
+                                    <p>{{product.source}}</p>
+                                    <p>{{product.degree}}</p>
+                                    {% if product.status == 0 %}
+                                        <p style="color:blue;">wait for call</p>
+                                    {% elif product.status == 1 %}
+                                        <p style="color:green;">conformed</p>
+                                    {% elif product.status == 2 %}
+                                        <p style="color:orange;">wait for call</p>
+                                    {% elif product.status == 3 %}
+                                        <p style="color:red;">wait for call</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                            {% empty %}
+                            <div class="row mx-auto">
+                                    <p class="text-center my_search_text"> 0 results found </p>
+                            </div>
+                    {% endfor %}
+                </div>
+        </div>
+
+{% endblock %}

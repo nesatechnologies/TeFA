@@ -12,7 +12,16 @@
         <form id="followformdynamic" method="post">
             {% csrf_token %}
             <input type="hidden" name="personId" id="personId" value="{{i.id}}">
-            <input type="text" name="control_no" value="{{i.lead.control_no}}" disabled><br>
+            <input type="text" name="control_no" value="{{i.lead.control_no}}" disabled>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <!-- Multiple non-breaking spaces -->
+
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-download" viewBox="0 0 16 16">
+              <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+              <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+            </svg>
+            <i class="bi bi-download"></i>
+
+            <br>
             <input type="text" name="control_no" value="{{i.lead.name}}" disabled><br>
             <select name="name" id="name">
               <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
@@ -32,12 +41,40 @@
             <input type="text" placeholder="Enter the Remark" name="remark"><br>
             <input type="submit">
         </form>
+
         {% endfor %}
         {% for msg in messages %}
         {{msg}}
         {% endfor %}
     </div>
 
+<br>
+<br>
+<!--  followup history part  -->
+{% if data3 %}
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title">Initial Call</h5>
+        <p class="card-text" style="color:white;">{{data3.emp_remark}}</p>
+        <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.calls_made.name}}</h6>
+        <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.called_datetime}}</h6>
+      </div>
+    </div>
+
+{% endif %}
+
+{% for i in data2 %}
+    <br>
+    <div class="card" style="width: 18rem;">
+      <div class="card-body">
+        <h5 class="card-title"> Followup No-{{forloop.counter}}</h5>
+        <p class="card-text" style="color:white;">{{i.emp_remark}}</p>
+        <h6 class="card-subtitle mb-2 text-body-secondary">{{i.calls_made.name}}</h6>
+        <h6 class="card-subtitle mb-2 text-body-secondary">{{i.called_datetime}}</h6>
+      </div>
+    </div>
+
+{% endfor %}
 
 <script>
    // Attach event listener to form submission

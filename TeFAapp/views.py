@@ -7,7 +7,12 @@ from django.contrib import auth,messages
 from .decorators import session_login_required
 
 import csv
+from django.db.models import Q
+import openpyxl
+from openpyxl import Workbook
+from django.http import HttpResponse
 
+from django.template.loader import render_to_string
 
 # Create your views here.
 @session_login_required
@@ -229,9 +234,7 @@ def call(request,id):
     return render(request, 'call.html',{'data':data,'data1':data1})
 
 def followup(request, id):
-    print("%%%%%%%%%%%%%%%%%%%%111111111$$$$$$$$$$$$$$$$$$$$$$")
     if request.method == 'POST':
-        print("%%%%%%%%%%%%%%%%%%%%22222222$$$$$$$$$$$$$$$$$$$$$$")
         selected_value = request.POST['name']
         if selected_value:
             name, emp_id = selected_value.split('|')
@@ -247,12 +250,8 @@ def followup(request, id):
 
         calldetails = Calldetails.objects.get(id=id)
         calls_made= Employee_details.objects.get(emp_id=emp_id)
-        print("%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$")
-        print(calls_made)
-        print("%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$")
         calls_updated_id = request.session.get('uid')
         calls_updated= Employee_details.objects.get(id=calls_updated_id)
-        print(calls_updated)
 
 
         userdata = Folloup(calldetails=calldetails, remark=remark, called_meadium=called_meadium, calls_made=calls_made, calls_updated=calls_updated)
@@ -267,7 +266,9 @@ def followup(request, id):
         return redirect('/')
     data = Calldetails.objects.filter(id=id)
     data1 = Employee_details.objects.all()
-    return render(request, 'folloup.html',{'data':data,'data1':data1})
+    data2 = Folloup.objects.filter(calldetails__id=id)
+    data3 = Calldetails.objects.get(id=id)
+    return render(request, 'folloup.html',{'data':data,'data1':data1,'data2':data2,'data3':data3})
 
 def followup_actions(request,id):
     data = Folloup.objects.filter(calldetails__id = id)
@@ -327,5 +328,194 @@ def upload_csv(request):
         message = "No file uploaded."
     return redirect('/')
 
+def contactbook(request):
+    data = Lead.objects.all()
+    return render(request,'contactbook.html',{'data':data})
 
+def searchresult(request):
+    products= None
+    query= None
+    if 'q' in request.GET:
+        query = request.GET.get('q')
+        products= Lead.objects.all().filter(Q(control_no__contains = query) | Q(date_time_added__contains = query) | Q(lead_given_date__contains = query) | Q(lead_no__contains = query) | Q(name__contains = query) | Q(course__contains = query) | Q(phone_no__contains = query) | Q(email__contains = query) | Q(place__contains = query) | Q(remark__contains = query) | Q(status__contains = query) | Q(source__contains = query) | Q(degree__contains = query))
+        return render(request, 'search.html', {'query':query, 'products':products})
 
+def export_to_excel(request):
+    # Create a new workbook
+    wb = Workbook()
+
+    # Activate the first sheet
+    ws = wb.active
+    ws.title = "Contactbook Data"
+
+    # Write headers
+    headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email", "Place", "Remark", "Status", "Source", "Degree"]
+    ws.append(headers)
+
+    # Fetch data from Lead model
+    leads = Lead.objects.all()
+
+    # Write data rows
+    for lead in leads:
+        statusval = ""
+        if lead.status == 0:
+            statusval = "wait for call"
+        elif lead.status == 1:
+            statusval = "conformed"
+        elif lead.status == 2:
+            statusval = "need following"
+        elif lead.status == 3:
+            statusval = "denied"
+
+        row = [lead.control_no, lead.date_time_added, lead.lead_given_date, lead.lead_no, lead.name, lead.course, lead.phone_no, lead.email, lead.place, lead.remark, statusval, lead.source, lead.degree]
+        ws.append(row)
+
+    # Create a response object
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=contactbook.xlsx'
+
+    # Save the workbook to the response
+    wb.save(response)
+
+    return response
+
+def need_following_export_to_excel(request):
+
+    # data_need_following = Calldetails.objects.filter(lead__status=2)
+    #
+    # # Initialize empty lists to store IDs
+    # calldetails_ids = []
+    #
+    # # Extract row IDs from data_need_following
+    # for calldetail in data_need_following:
+    #     calldetails_ids.append(calldetail.id)
+    #
+    # print(calldetails_ids)
+    #
+    # # Create a new workbook
+    # wb = Workbook()
+    #
+    # # Activate the first sheet
+    # ws = wb.active
+    # ws.title = "Need following Data"
+    #
+    # headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email",
+    #            "Place", "Remark", "Source", "Degree", "", "", "initial call"]
+    # row1 = ["", "", "", "", "", "", "", "", "", "", "", "", "", "",
+    #        "calls_made", "calls_updated", "called_datetime", "called_meadium", "emp_remark"]
+    # # Write headers
+    # ws.append(headers)
+    # ws.append(row1)
+    # for ids in calldetails_ids:
+    #     data = Folloup.objects.filter(calldetails__id=ids)
+    #     data1 = Calldetails.objects.get(id=ids)
+    #
+    #     row = [data1.lead.control_no, data1.lead.date_time_added, data1.lead.lead_given_date, data1.lead.lead_no, data1.lead.name, data1.lead.course, data1.lead.phone_no, data1.lead.email, data1.lead.place, data1.lead.remark, data1.lead.source, data1.lead.degree,"","", data1.calls_made.name, data1.calls_updated.name, data1.called_datetime, data1.called_meadium, data1.emp_remark]
+    #     ws.append(row)
+    #
+    # # Create a response object
+    # response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    # response['Content-Disposition'] = 'attachment; filename=needfollowing.xlsx'
+    #
+    # # Save the workbook to the response
+    # wb.save(response)
+    #
+    # return response
+    calldetails_data = Calldetails.objects.filter(lead__status=2)
+
+    # Create a new workbook
+    wb = Workbook()
+
+    # Activate the first sheet
+    ws = wb.active
+    ws.title = "Need following Data"
+
+    def get_folloup_headers(calldetail):
+        """
+        Generates follow-up headers based on the number of follow-up entries for a calldetail.
+        """
+        folloup_count = calldetail.folloup_set.all().count()
+        return ["Folloup Remark", "Folloup Updated", "Made By"] * folloup_count
+
+    # Define base headers
+    base_headers = [
+        "Control No",
+        "Date Time Added",
+        "Lead Given Date",
+        "Lead No",
+        "Name",
+        "Course",
+        "Phone No",
+        "Email",
+        "Place",
+        "Remark",
+        "Source",
+        "Degree",
+        "Calls Made",
+        "Calls Updated",
+        "Called Datetime",
+        "Called Medium",
+        "Employee Remark",
+    ]
+
+    # Combine base headers and dynamically generated follow-up headers
+    headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
+
+    # Write headers to the first row only
+    ws.append(headers)
+
+    for calldetail in calldetails_data:
+        # Initialize empty lists to store folloup details
+        folloup_remarks = []
+        folloup_updated = []
+        call_made_by = []
+
+        # Retrieve related Folloup data
+        folloup_data = Folloup.objects.filter(calldetails=calldetail)
+
+        # Extract folloup details into separate lists
+        for folloup in folloup_data:
+            folloup_remarks.append(folloup.remark)
+            folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d %H:%M:%S"))  # Format date/time
+            call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
+
+        # Extract Calldetails data
+        row = []  # Create an empty row
+
+        # Add lead details
+        row.extend([
+            calldetail.lead.control_no,
+            calldetail.lead.date_time_added,
+            calldetail.lead.lead_given_date,
+            calldetail.lead.lead_no,
+            calldetail.lead.name,
+            calldetail.lead.course,
+            calldetail.lead.phone_no,
+            calldetail.lead.email,
+            calldetail.lead.place,
+            calldetail.lead.remark,
+            calldetail.lead.source,
+            calldetail.lead.degree,
+            calldetail.calls_made.name,  # Assuming 'name' is the relevant field
+            calldetail.calls_updated.name,  # Assuming 'name' is the relevant field
+            calldetail.called_datetime,
+            calldetail.called_meadium,
+            calldetail.emp_remark,
+        ])
+
+        # Add folloup details with corresponding headings
+        for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
+            row.append(remark)
+            row.append(updated)
+            row.append(made_by)
+
+        # Write the combined row to the worksheet
+        ws.append(row)
+
+    # Create a response object
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename=needfollowing.xlsx'
+
+    # Save the workbook to the response
+    wb.save(response)
+    return response

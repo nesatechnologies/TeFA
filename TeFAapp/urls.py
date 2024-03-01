@@ -14,4 +14,8 @@ urlpatterns = [
     path('followup/<int:id>/', views.followup, name='followup'),
     path('followup_actions/<int:id>/', views.followup_actions, name='followup_actions'),
     path('upload_csv/', views.upload_csv, name='upload_csv'),
+    path('contactbook/', views.contactbook, name='contactbook'),
+    path('searchresult/', views.searchresult, name='searchresult'),
+    path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
+    path('need_following_export_to_excel/', views.need_following_export_to_excel, name='need_following_export_to_excel'),
     ]

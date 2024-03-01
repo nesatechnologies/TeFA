@@ -11,25 +11,75 @@
         {% for i in data %}
         <form id="dynamicForm" method="post">
             {% csrf_token %}
-            <input type="hidden" name="personId" id="personId" value="{{i.id}}">
-            <input type="text" name="control_no" value="{{i.control_no}}" disabled><br>
-            <input type="text" name="control_no" value="{{i.name}}" disabled><br>
-            <select name="name" id="name">
-              <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
-              {% for j in data1 %}
-              <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
-              {% endfor %}
-            </select><br>
-            <select name="called_meadium" id="called_meadium">
-              <option value="phone">Phone</option>
-              <option value="email">Email</option>
-            </select><br>
-            <select name="status" id="status">
-              <option value="1">CONFORMED</option>
-              <option value="2">NEED FOLLOWING</option>
-              <option value="3">DENIED</option>
-            </select><br>
-            <input type="text" placeholder="Enter the Remark" name="remark"><br>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                <input type="hidden" name="personId" id="personId" value="{{i.id}}">
+                <input type="text" name="control_no" value="{{i.control_no}}" disabled><br>
+
+
+                {% if i.name %}
+                    <input type="text" name="name" value="{{i.name}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.name is not available -->
+                    <input type="text" name="name" value="Name not available"><br>
+                {% endif %}
+
+                {% if i.phone_no %}
+                    <input type="text" name="phone_no" value="{{i.phone_no}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.phone_no is not available -->
+                    <input type="text" name="name" value="phone no not available"><br>
+                {% endif %}
+
+                {% if i.email %}
+                    <input type="text" name="email" value="{{i.email}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.email is not available -->
+                    <input type="text" name="name" value="email not available"><br>
+                {% endif %}
+
+                {% if i.course %}
+                    <input type="text" name="course" value="{{i.course}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.course is not available -->
+                    <input type="text" name="name" value="course not available"><br>
+                {% endif %}
+
+                {% if i.place %}
+                    <input type="text" name="place" value="{{i.place}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.place is not available -->
+                    <input type="text" name="name" value="place not available"><br>
+                {% endif %}
+
+                {% if i.remark %}
+                    <input type="text" name="remark" value="{{i.remark}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.remark is not available -->
+                    <input type="text" name="name" value="remark not available"><br>
+                {% endif %}
+
+            </div>
+
+            <br>
+            <br>
+            <div class="col-12 col-sm-12 col-md-12 col-lg-6 ">
+                <select name="name" id="name">
+                  <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
+                  {% for j in data1 %}
+                  <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
+                  {% endfor %}
+                </select><br>
+                <select name="called_meadium" id="called_meadium">
+                  <option value="phone">Phone</option>
+                  <option value="email">Email</option>
+                </select><br>
+                <select name="status" id="status">
+                  <option value="1">CONFORMED</option>
+                  <option value="2">NEED FOLLOWING</option>
+                  <option value="3">DENIED</option>
+                </select><br>
+                <input type="text" placeholder="Enter the Remark" name="remark"><br>
+            </div>
             <input type="submit">
         </form>
         {% endfor %}

@@ -110,10 +110,15 @@
             <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
               <span class="mdi mdi-menu"></span>
             </button>
+
+            <!--   SEARCH PART         -->
             <ul class="navbar-nav w-100">
               <li class="nav-item w-100">
-                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
-                  <input type="text" class="form-control" placeholder="Search products">
+                <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search" action="{% url 'searchresult' %}" method="get">
+                  {% csrf_token %}
+                  <input class="form-control me-2" type="search" placeholder="Search" name="q" aria-label="Search">
+
+                  <!--  <input type="text" class="form-control" placeholder="Search products">  -->
                 </form>
               </li>
             </ul>
@@ -284,22 +289,7 @@
       <!-- page-body-wrapper ends -->
     </div>
 
-<!-- Script for popup -->
-    <script>
 
-           function closePopup() {
-                // Hide the popup by setting its display property to "none"
-                document.getElementById('callPopup').style.display = 'none';
-              }
-
-              // Close the popup when clicking outside of it (optional)
-              window.onclick = function(event) {
-                if (event.target == document.getElementById('callPopup')) {
-                  closePopup();
-                }
-              }
-
-    </script>
 
 
     <!-- container-scroller -->
