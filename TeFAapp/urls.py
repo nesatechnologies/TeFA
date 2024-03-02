@@ -18,4 +18,6 @@ urlpatterns = [
     path('searchresult/', views.searchresult, name='searchresult'),
     path('export_to_excel/', views.export_to_excel, name='export_to_excel'),
     path('need_following_export_to_excel/', views.need_following_export_to_excel, name='need_following_export_to_excel'),
+    path('conformed_export_to_excel/', views.conformed_export_to_excel, name='conformed_export_to_excel'),
+    path('denied_export_to_excel/', views.denied_export_to_excel, name='denied_export_to_excel'),
     ]

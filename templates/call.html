@@ -17,45 +17,71 @@
 
 
                 {% if i.name %}
-                    <input type="text" name="name" value="{{i.name}}" ><br>
+                    <input type="text" name="name1" value="{{i.name}}" ><br>
                 {% else %}
                     <!-- Handle the case where i.name is not available -->
-                    <input type="text" name="name" value="Name not available"><br>
+                    <input type="text" name="name1" placeholder="Name not available"><br>
                 {% endif %}
 
                 {% if i.phone_no %}
                     <input type="text" name="phone_no" value="{{i.phone_no}}" ><br>
                 {% else %}
                     <!-- Handle the case where i.phone_no is not available -->
-                    <input type="text" name="name" value="phone no not available"><br>
+                    <input type="text" name="phone_no" placeholder="phone no not available"><br>
                 {% endif %}
 
                 {% if i.email %}
                     <input type="text" name="email" value="{{i.email}}" ><br>
                 {% else %}
                     <!-- Handle the case where i.email is not available -->
-                    <input type="text" name="name" value="email not available"><br>
+                    <input type="text" name="email" placeholder="email not available"><br>
+                {% endif %}
+
+                {% if i.degree %}
+                    <input type="text" name="degree" value="{{i.degree}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.email is not available -->
+                    <input type="text" name="degree" placeholder="qualification not available"><br>
                 {% endif %}
 
                 {% if i.course %}
-                    <input type="text" name="course" value="{{i.course}}" ><br>
+                    <select name="course" id="course">
+                      <option value="{{i.course}}">{{i.course}}</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                    </select>
                 {% else %}
                     <!-- Handle the case where i.course is not available -->
-                    <input type="text" name="name" value="course not available"><br>
+                    <select name="course" id="course1">
+                      <option value="">not mentioned</option>
+                      <option value="A">A</option>
+                      <option value="B">B</option>
+                      <option value="C">C</option>
+                      <option value="D">D</option>
+                    </select>
                 {% endif %}
 
                 {% if i.place %}
                     <input type="text" name="place" value="{{i.place}}" ><br>
                 {% else %}
                     <!-- Handle the case where i.place is not available -->
-                    <input type="text" name="name" value="place not available"><br>
+                    <input type="text" name="place" placeholder="place not available"><br>
+                {% endif %}
+
+                {% if i.source %}
+                    <input type="text" name="source" value="{{i.source}}" ><br>
+                {% else %}
+                    <!-- Handle the case where i.email is not available -->
+                    <input type="text" name="source" placeholder="source not available"><br>
                 {% endif %}
 
                 {% if i.remark %}
-                    <input type="text" name="remark" value="{{i.remark}}" ><br>
+                    <input type="text" name="remark" value="{{i.remark}}" disabled><br>
                 {% else %}
                     <!-- Handle the case where i.remark is not available -->
-                    <input type="text" name="name" value="remark not available"><br>
+                    <input type="text" name="remark" placeholder="remark not available" disabled><br>
                 {% endif %}
 
             </div>

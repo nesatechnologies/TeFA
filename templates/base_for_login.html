@@ -23,14 +23,13 @@
     <!-- End layout styles -->
     <link rel="shortcut icon" href="{% static 'logo.jpeg' %}" />
   </head>
-  <body>
-    <div class="container-scroller">
+  <body style="background-color:#1b1c1c;">
       <!-- partial:partials/_sidebar.html -->
 
       <!-- partial -->
       <div class="container-fluid page-body-wrapper">
         <!-- partial:partials/_navbar.html -->
-        <nav class="navbar p-0 fixed-top d-flex flex-row">
+        <nav class="navbar p-0 fixed-top ">
 
 
           <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
@@ -70,11 +69,9 @@
                 <a class="nav-link" href="{% url 'register' %}" style="color: rgb(250, 250, 249);">REGISTER</a>
               </li>
               {% endif %}
-
-
-
-
             </ul>
+
+
             <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
               <span class="mdi mdi-format-line-spacing"></span>
             </button>
@@ -103,10 +100,11 @@
           </footer>
           <!-- partial -->
         </div>
-        <!-- main-panel ends -->
       </div>
+        <!-- main-panel ends -->
+
       <!-- page-body-wrapper ends -->
-    </div>
+
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="{% static 'assets/vendors/js/vendor.bundle.base.js' %}"></script>
