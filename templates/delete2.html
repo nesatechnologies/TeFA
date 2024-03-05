@@ -9,7 +9,7 @@
             <input type="hidden" name="personId" id="personId" value="{{i.id}}">
             <p style="color:red;">Do you want to delete {{i.control_no}} ?</p>
             {% endfor %}
-          <a href="{% url 'home' %}">cancel</a>
+          <a href="{% url 'contactbook' %}">cancel</a>
           <input type="submit">
         </form>
 
@@ -42,7 +42,7 @@
 
                     // Send POST request to save form data
                     $.ajax({
-                        url: `/delete/${personId}/`, // Use personId variable here
+                        url: `/delete2/${personId}/`, // Use personId variable here
                         method: 'POST',
                         data: formData,
                         success: function(response) {

@@ -1,102 +1,115 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<h2>Upload CSV File</h2>
-    {% if message %}
-        <p>{{ message }}</p>
-    {% endif %}
-    <form action="/upload_csv/" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <input type="file" name="csv_file" accept=".csv" required>
-        <button type="submit">Upload</button>
-    </form>
+<html>
+<head>
+    <style>
+    /* Set text color to white */
+    .text-white {
+        color: white;
+    }
 
-<br>
-<br>
-<h2>Upload Details</h2>
-<form method="post">
-    {% csrf_token %}
-    <div class="row_data">
-        <div class="label_data">
-            <label for="phone_no">PHONE NO:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" id="phone_no" name="phone_no" value="">
-        </div>
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Upload CSV File</h2>
+        {% if message %}
+        <p class="message">{{ message }}</p>
+        {% endif %}
+        <form action="/upload_csv/" method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="csv_file" class="col-sm-3 col-form-label">Choose a CSV file:</label>
+                <div class="col-sm-6">
+                    <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv" required>
+                </div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success">Upload</button>
+                </div>
+            </div>
+        </form>
+
+        <hr>
+
+        <h2 class="text-center">Upload Details</h2>
+        <form method="post" class="details-form">
+            {% csrf_token %}
+            <div class="form-group row">
+                <label for="phone_no" class="col-sm-3 col-form-label">PHONE NO:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="phone_no" name="phone_no" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="name" class="col-sm-3 col-form-label">NAME:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="name" name="name" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="course" class="col-sm-3 col-form-label">COURSE:</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="course" name="course" style="color:white;">
+                        <option value="">Not mentioned</option>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="email" class="col-sm-3 col-form-label">EMAIL:</label>
+                <div class="col-sm-9">
+                    <input type="email" class="form-control" id="email" name="email" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="place" class="col-sm-3 col-form-label">PLACE:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="place" name="place" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="lead_date" class="col-sm-3 col-form-label">LEAD GIVEN DATE:</label>
+                <div class="col-sm-9">
+                    <input type="date" class="form-control" id="lead_date" name="lead_date" value="{% now 'Y-m-d' %}" style="color:white;">
+                </div>
+            </div>
+             <div class="form-group row">
+                <label for="place" class="col-sm-3 col-form-label">PLACE:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="place" name="place" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="remark" class="col-sm-3 col-form-label">REMARK:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="remark" name="remark" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="source" class="col-sm-3 col-form-label">SOURCE:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="source" name="source" style="color:white;">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="degree" class="col-sm-3 col-form-label">DEGREE:</label>
+                <div class="col-sm-9">
+                    <input type="text" class="form-control" id="degree" name="degree" style="color:white;">
+                </div>
+            </div>
+            <!-- Other form fields go here -->
+            <div class="form-group row">
+                <div class="col-sm-9 offset-sm-3">
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </div>
+            <p class="text-center text-black">{{ msg }}</p>
+        </form>
     </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="name">NAME:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" name="name" id="name">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="course">COURSE:</label>
-        </div>
-        <select name="course" id="course">
-          <option value="">not mentioned</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-          <option value="D">D</option>
-        </select>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="email">EMAIL:</label>
-        </div>
-        <div class="val_in">
-            <input type="email" name="email" id="email">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="place">PLACE:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" name="place" id="place">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="lead_date">LEAD GIVEN DATE:</label>
-        </div>
-        <div class="val_in">
-            <input type="date" name="lead_date" id="lead_date" value="{% now 'Y-m-d' %}">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="remark">REMARK:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" name="remark" id="remark">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="remark">SOURCE:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" name="source" id="source">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="label_data">
-            <label for="remark">DEGREE:</label>
-        </div>
-        <div class="val_in">
-            <input type="text" name="degree" id="degree">
-        </div>
-    </div>
-    <div class="row_data">
-        <div class="btn">
-            <input type="submit" value="submit">
-        </div>
-    </div>
-    <p style="color: black;">{{msg}}</p>
-</form>
+</body>
+</html>
 {% endblock %}

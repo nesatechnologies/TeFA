@@ -1,10 +1,8 @@
-
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Call page</title>
+    <title>edit</title>
 </head>
 <body>
     <div class="container">
@@ -86,26 +84,6 @@
 
             </div>
 
-            <br>
-            <br>
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 ">
-                <select name="name" id="name">
-                  <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
-                  {% for j in data1 %}
-                  <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
-                  {% endfor %}
-                </select><br>
-                <select name="called_meadium" id="called_meadium">
-                  <option value="phone">Phone</option>
-                  <option value="email">Email</option>
-                </select><br>
-                <select name="status" id="status">
-                  <option value="1">CONFORMED</option>
-                  <option value="2">NEED FOLLOWING</option>
-                  <option value="3">DENIED</option>
-                </select><br>
-                <input type="text" placeholder="Enter the Remark" name="remark"><br>
-            </div>
             <input type="submit">
         </form>
         {% endfor %}
@@ -142,7 +120,7 @@
 
                     // Send POST request to save form data
                     $.ajax({
-                        url: `/call/${personId}/`, // Use personId variable here
+                        url: `/edit/${personId}/`, // Use personId variable here
                         method: 'POST',
                         data: formData,
                         success: function(response) {
@@ -165,5 +143,3 @@
 </script>
 </body>
 </html>
-
-

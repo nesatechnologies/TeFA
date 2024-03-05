@@ -9,7 +9,8 @@ urlpatterns = [
     path('need_following/', views.need_following, name='need_following'),
     path('denied/', views.denied, name='denied'),
     path('add_customer/', views.add_customer, name='add_customer'),
-    path('add_customer/<int:id>/', views.delete, name='delete'),
+    path('delete/<int:id>/', views.delete, name='delete'),
+    path('delete2/<int:id>/', views.delete2, name='delete2'),
     path('call/<int:id>/', views.call, name='call'),
     path('followup/<int:id>/', views.followup, name='followup'),
     path('followup_actions/<int:id>/', views.followup_actions, name='followup_actions'),
@@ -20,4 +21,6 @@ urlpatterns = [
     path('need_following_export_to_excel/', views.need_following_export_to_excel, name='need_following_export_to_excel'),
     path('conformed_export_to_excel/', views.conformed_export_to_excel, name='conformed_export_to_excel'),
     path('denied_export_to_excel/', views.denied_export_to_excel, name='denied_export_to_excel'),
+    path('single_person_export_to_excel/<int:id>', views.single_person_export_to_excel, name='single_person_export_to_excel'),
+    path('edit/<int:id>/', views.edit, name='edit'),
     ]

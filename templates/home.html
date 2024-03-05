@@ -40,6 +40,33 @@
             max-height: 80%; /* Adjust the height as needed */
             overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
           }
+
+             /* Popup container styles */
+          .delpopup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .delpopup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
         </style>
     </head>
     <body>
@@ -236,7 +263,7 @@
                     <td>{{i.phone_no}}</td>
 
 
-                    <td> <a href="{% url 'delete' i.id %}"> <input type="button" value="delete"> </a></td>
+                    <td> <input type="button" value="delete" onclick="delopenPopup({{ i.id }})"> </td>
 
                     <!-- Button or link to open the popup -->
                     <td> <input type="button" value="Make Initial Call" onclick="openPopup({{ i.id }})"> </td>
@@ -254,6 +281,16 @@
         <div class="popup-content">
             <!-- Include the content of call.html here -->
             <div id="callForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+        <!-- Popup container -->
+    <div id="delcallPopup" class="delpopup">
+        <div class="delpopup-content">
+            <!-- Include the content of call.html here -->
+            <div id="delcallForm">
                 <!-- Form will be loaded here dynamically -->
             </div>
         </div>
@@ -279,18 +316,51 @@
                     });
                 }
 
-                function closePopup() {
-                    // Hide the popup by setting its display property to "none"
-                    document.getElementById('callPopup').style.display = 'none';
-                  }
 
-                  // Close the popup when clicking outside of it (optional)
-                  window.onclick = function(event) {
-                    if (event.target == document.getElementById('callPopup')) {
-                      closePopup();
-                    }
-                  }
 
+
+                function delopenPopup(personId) {
+                    // Show the popup
+                    console.log(personId);
+                    $('#delcallPopup').show();
+
+                    // Fetch the call form dynamically
+                    $.ajax({
+                        url: `/delete/${personId}`,
+                        success: function(data) {
+                            $('#delcallForm').html(data);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching form data:', error);
+                        }
+                    });
+                }
+
+
+
+
+// Close the popup when clicking outside of it (optional)
+window.onclick = function(event) {
+    var callPopup = document.getElementById('callPopup');
+    var delcallPopup = document.getElementById('delcallPopup');
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+
+    if (event.target == callPopup) {
+        closePopup(callPopup);
+    }
+
+    if (event.target == delcallPopup) {
+        closePopup(delcallPopup);
+    }
+}
+
+function closePopup(popup) {
+    // Hide the popup by setting its display property to "none"
+    popup.style.display = 'none';
+    location.reload();
+}
 
 
 
