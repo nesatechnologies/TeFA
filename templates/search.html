@@ -1,6 +1,97 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+<html>
+    <head>
+        <style>
+
+
+
+          /* Popup container styles */
+          .popup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+          /* Popup container styles */
+          .delpopup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .delpopup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+          /* Popup container styles */
+          .followuppopup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .followuppopupcontent {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+         </style>
+    </head>
+    <body>
+
         <div>
                 <p class="text-center my_search_text">You have searched for: <b>"{{query}}"</b></p>
         </div>
@@ -24,13 +115,36 @@
                                     <p>{{product.degree}}</p>
                                     {% if product.status == 0 %}
                                         <p style="color:blue;">wait for call</p>
+                                        <p onclick="openPopup({{ product.id }})">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                                              <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+                                            </svg>
+                                            <i class="bi bi-telephone"></i>
+                                        </p>
                                     {% elif product.status == 1 %}
                                         <p style="color:green;">conformed</p>
                                     {% elif product.status == 2 %}
-                                        <p style="color:orange;">wait for call</p>
+                                        <p style="color:orange;">need following</p>
+                                        {% for k in data %}
+                                        <p onclick="followopenPopup({{ k.id }})">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                                            </svg>
+                                            <i class="bi bi-arrow-right-circle"></i>
+                                        </p>
+                                        {% endfor %}
                                     {% elif product.status == 3 %}
-                                        <p style="color:red;">wait for call</p>
+                                        <p style="color:red;">denied</p>
                                     {% endif %}
+
+                                    <p onclick="delopenPopup({{ product.id }})">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                          <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                          <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                                        </svg>
+                                        <i class="bi bi-trash"></i>
+                                    </p>
+
                                 </div>
                             </div>
                         </div>
@@ -42,4 +156,135 @@
                 </div>
         </div>
 
+
+
+            <!-- Popup container -->
+    <div id="delcallPopup" class="delpopup">
+        <div class="delpopup-content">
+            <!-- Include the content of call.html here -->
+            <div id="delcallForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+        <!-- Popup container -->
+    <div id="callPopup" class="popup">
+        <div class="popup-content">
+            <!-- Include the content of call.html here -->
+            <div id="callForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup container -->
+    <div id="followcallPopup" class="followuppopup">
+        <div class="followuppopupcontent">
+            <!-- Include the content of call.html here -->
+            <div id="followcallForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+        <script>
+
+
+
+                function openPopup(personId) {
+                    // Show the popup
+                    console.log(personId);
+                    $('#callPopup').show();
+
+                    // Fetch the call form dynamically
+                    $.ajax({
+                        url: `/call/${personId}`,
+                        success: function(data) {
+                            $('#callForm').html(data);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching form data:', error);
+                        }
+                    });
+                }
+
+
+        function followopenPopup(personId) {
+            // Show the popup
+            console.log(personId);
+
+
+            $('#followcallPopup').show();
+
+            // Fetch the call form dynamically
+            $.ajax({
+                url: `/followup/${personId}/`,
+                success: function (data) {
+                    $('#followcallForm').html(data);
+
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching form data:', error);
+                }
+            });
+        }
+
+
+            function delopenPopup(personId) {
+                // Show the popup
+                console.log(personId);
+                $('#delcallPopup').show();
+
+                // Fetch the call form dynamically
+                $.ajax({
+                    url: `/delete3/${personId}`,
+                    success: function(data) {
+                        $('#delcallForm').html(data);
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching form data:', error);
+                    }
+                });
+            }
+
+
+
+
+
+
+        // Close the popup when clicking outside of it (optional)
+        window.onclick = function(event) {
+            var callPopup = document.getElementById('callPopup');
+            var delcallPopup = document.getElementById('delcallPopup');
+            var followcallPopup = document.getElementById('followcallPopup');
+
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+
+            if (event.target == callPopup) {
+                closePopup(callPopup);
+            }
+
+            if (event.target == delcallPopup) {
+                closePopup(delcallPopup);
+            }
+
+            if (event.target == followcallPopup) {
+                closePopup(followcallPopup);
+            }
+        }
+
+        function closePopup(popup) {
+            // Hide the popup by setting its display property to "none"
+            popup.style.display = 'none';
+            location.reload();
+        }
+
+
+
+    </script>
+
+    </body>
+</html>
 {% endblock %}

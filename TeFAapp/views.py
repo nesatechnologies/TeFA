@@ -13,6 +13,9 @@ from openpyxl import Workbook
 from django.http import HttpResponse
 from django.db.models import Max
 
+from openpyxl.styles import Font, Color, Fill
+from openpyxl.styles import PatternFill
+
 from django.template.loader import render_to_string
 
 # Create your views here.
@@ -175,6 +178,14 @@ def delete2(request, id):
     data = Lead.objects.filter(id=id)
     return render(request, 'delete2.html',{'data':data})
 
+def delete3(request, id):
+    if request.method == 'POST':
+        data = Lead.objects.get(id=id)
+        data.delete()
+        return redirect('/')
+    data = Lead.objects.filter(id=id)
+    return render(request, 'delete3.html',{'data':data})
+
 def login(request):
     if request.method == 'POST':
         print("login part")
@@ -279,7 +290,9 @@ def call(request,id):
 
 def followup(request, id):
     if 'username' in request.session:
+        print("followup")
         if request.method == 'POST':
+            print("followup1")
             selected_value = request.POST['name']
             if selected_value:
                 name, emp_id = selected_value.split('|')
@@ -354,13 +367,9 @@ def upload_csv(request):
                 csv_data = csv.reader(decoded_file.splitlines())
                 for row in csv_data:
                     # Process each row of the CSV file
-                    print("________________________START_________________________")
-                    print(row)
-                    print("__________________________END_______________________")
                     if row[0] == 'SL.NO':
                         continue
                     else:
-                        print("%%%%%%%%%%%%%%%%%%%%%%   1   %%%%%%%%%%%%%%%%%%%%%%%")
                         control_no = int(row[1])
                         lead_no = str(row[2])
 
@@ -371,9 +380,8 @@ def upload_csv(request):
                         # Format the datetime object in the desired format
                         formatted_date = date_object.strftime("%Y-%m-%d")
                         lead_given_date = formatted_date
-                        print("%%%%%%%%%%%%%%%%%%%%%%   2   %%%%%%%%%%%%%%%%%%%%%%%")
 
-                        source = str(row[4])
+                        source = ""
                         name = str(row[5])
                         phone_no = int(row[6])
                         email = (row[7])
@@ -381,18 +389,72 @@ def upload_csv(request):
                         degree = str(row[9])
                         course = str(row[10])
                         remark = str(row[11])
-                        print("%%%%%%%%%%%%%%%%%%%%%%   3   %%%%%%%%%%%%%%%%%%%%%%%")
-                        new_data = row[12:]
-                        print(new_data)
-
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
                                     degree=degree)
-                        print("%%%%%%%%%%%%%%%%%%%%%%   4   %%%%%%%%%%%%%%%%%%%%%%%")
-                        # data.save()
+                        data.save()
+
+                        ##### initial call part
+                        initial_call = str(row[12])
+                        print(initial_call)
+                        calls_made= Employee_details.objects.get(user_name=initial_call)
+
+                        calls_updated_id = request.session.get('uid')
+                        calls_updated = Employee_details.objects.get(id=calls_updated_id)
+
+                        initial_call_date = lead_given_date
+                        initial_call_remark= ""
+                        called_meadium=str(row[4])
 
 
+                        lead = Lead.objects.get(id=data.id)
+                        lead.status = 2
+                        lead.save()
 
+                        data2= Calldetails(lead=lead, calls_made=calls_made, emp_remark=initial_call_remark, called_datetime=initial_call_date, called_meadium=called_meadium, calls_updated=calls_updated)
+                        data2.save()
+
+                        # need following part decument update
+                        new_data = row[14:]
+                        print(new_data)
+                        sublist = []
+                        for i, item in enumerate(new_data):
+                            # Skip every fourth position containing an empty string
+                            if (i + 1) % 4 == 0 and item == "":
+                                continue
+                            # Append the current item to the sublist
+                            sublist.append(item)
+                            if len(sublist) == 3:
+                                if sublist[0] == "" and sublist[1] == "" and sublist[2] == "":
+                                    continue
+                                else:
+                                    print(sublist)
+                                    calldetails = Calldetails.objects.get(id=data2.id)
+                                    remark = sublist[2]
+                                    calls_made = Employee_details.objects.get(user_name=sublist[0])
+                                    calls_updated_id = request.session.get('uid')
+                                    calls_updated = Employee_details.objects.get(id=calls_updated_id)
+                                    called_meadium = ""
+
+                                    if sublist[1] == "":
+                                        data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
+                                                        called_meadium=called_meadium, calls_updated=calls_updated)
+                                        data3.save()
+                                    else:
+                                        # Parse the date string into a datetime object
+                                        date_object = datetime.strptime(sublist[1], "%d/%m/%Y")
+                                        # Format the datetime object in the desired format
+                                        formatted_date = date_object.strftime("%Y-%m-%d")
+                                        called_datetime = formatted_date
+                                        data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
+                                                        called_datetime=called_datetime, called_meadium=called_meadium,
+                                                        calls_updated=calls_updated)
+                                        data3.save()
+
+                                    sublist = []
+                                    current_followups = calldetails.no_of_followups
+                                    calldetails.no_of_followups = current_followups + 1
+                                    calldetails.save()
 
 
                 print("CSV file uploaded and processed successfully.")
@@ -419,10 +481,13 @@ def searchresult(request):
         if 'q' in request.GET:
             query = request.GET.get('q')
             products= Lead.objects.all().filter(Q(control_no__contains = query) | Q(date_time_added__contains = query) | Q(lead_given_date__contains = query) | Q(lead_no__contains = query) | Q(name__contains = query) | Q(course__contains = query) | Q(phone_no__contains = query) | Q(email__contains = query) | Q(place__contains = query) | Q(remark__contains = query) | Q(status__contains = query) | Q(source__contains = query) | Q(degree__contains = query))
-            return render(request, 'search.html', {'query':query, 'products':products})
+            for m in products:
+                data = Calldetails.objects.filter(lead__id = m.id)
+            return render(request, 'search.html', {'query':query, 'products':products, 'data':data})
     else:
         return redirect('/')
 
+# CONTACTBOOK
 def export_to_excel(request):
     if 'username' in request.session:
         # Create a new workbook
@@ -432,9 +497,21 @@ def export_to_excel(request):
         ws = wb.active
         ws.title = "Contactbook Data"
 
-        # Write headers
-        headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email", "Place", "Remark", "Status", "Source", "Degree"]
-        ws.append(headers)
+         # Write headers
+        # headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email", "Place", "Remark", "Status", "Source", "Degree"]
+        # ws.append(headers)
+
+        # Define a red fill style
+        red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
+
+        headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email",
+                   "Place", "Remark", "Status", "Source", "Degree"]
+
+        # Write headers with the red fill style
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+            cell.fill = red_fill
 
         # Fetch data from Lead model
         leads = Lead.objects.all()
@@ -517,12 +594,35 @@ def need_following_export_to_excel(request):
             "Initial Called Datetime",
             "Initial Call Made",
         ]
+        red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')  # Red fill
+
+        # Define white fill pattern
+        green_fill = PatternFill(start_color='50FD79', end_color='50FD79', fill_type='solid')  # green fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
 
+        # Write headers to the first row with appropriate fill applied
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+
+            if col_idx <= len(base_headers):  # Apply red fill to base headers
+                cell.fill = red_fill
+            else:  # Apply white fill to follow-up headers
+                cell.fill = green_fill
+
         # Write headers to the first row only
+        # Increase the height of the first row
+        ws.row_dimensions[1].height = 60  # Adjust height as needed
+
+        # # Remove color from empty cells
+        # for row in ws.iter_rows():
+        #     for cell in row:
+        #         if cell.value is None:
+        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+
         ws.append(headers)
 
         for calldetail in calldetails_data:
@@ -572,6 +672,8 @@ def need_following_export_to_excel(request):
 
             # Write the combined row to the worksheet
             ws.append(row)
+
+
 
         # Create a response object
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

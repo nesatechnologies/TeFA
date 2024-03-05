@@ -11,6 +11,7 @@ urlpatterns = [
     path('add_customer/', views.add_customer, name='add_customer'),
     path('delete/<int:id>/', views.delete, name='delete'),
     path('delete2/<int:id>/', views.delete2, name='delete2'),
+    path('delete3/<int:id>/', views.delete3, name='delete3'),
     path('call/<int:id>/', views.call, name='call'),
     path('followup/<int:id>/', views.followup, name='followup'),
     path('followup_actions/<int:id>/', views.followup_actions, name='followup_actions'),
