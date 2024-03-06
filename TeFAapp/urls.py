@@ -14,6 +14,7 @@ urlpatterns = [
     path('delete3/<int:id>/', views.delete3, name='delete3'),
     path('call/<int:id>/', views.call, name='call'),
     path('followup/<int:id>/', views.followup, name='followup'),
+    path('followup2/<int:id>/', views.followup2, name='followup2'),
     path('followup_actions/<int:id>/', views.followup_actions, name='followup_actions'),
     path('upload_csv/', views.upload_csv, name='upload_csv'),
     path('contactbook/', views.contactbook, name='contactbook'),

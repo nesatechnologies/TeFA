@@ -53,6 +53,9 @@ class Folloup(models.Model):
     called_meadium = models.CharField(max_length=10, default='phone')
     calls_updated = models.ForeignKey(Employee_details, on_delete=models.CASCADE, related_name='follo_calls_updated', default=None)
 
+class Courses(models.Model):
+    course = models.CharField(max_length=250)
+
 
 
 

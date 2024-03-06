@@ -158,7 +158,8 @@ def add_customer(request):
             data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source, degree=degree)
             data.save()
             return redirect('home')
-        return render(request, 'add_customer.html')
+        coursedata = Courses.objects.all()
+        return render(request, 'add_customer.html',{'coursedata':coursedata})
     else:
         return redirect('/')
 
@@ -284,7 +285,8 @@ def call(request,id):
             return redirect('/')
         data = Lead.objects.filter(id=id)
         data1 = Employee_details.objects.all()
-        return render(request, 'call.html',{'data':data,'data1':data1})
+        coursedata = Courses.objects.all()
+        return render(request, 'call.html',{'data':data,'data1':data1,'coursedata':coursedata})
     else:
         return redirect('/')
 
@@ -338,11 +340,84 @@ def followup(request, id):
             calldetails.lead.status = status
             calldetails.lead.save()
             return redirect('/')
+
+        #### need folloup page - calldeatils id is get from call #####
         data = Calldetails.objects.filter(id=id)
         data1 = Employee_details.objects.all()
         data2 = Folloup.objects.filter(calldetails__id=id)
         data3 = Calldetails.objects.get(id=id)
-        return render(request, 'folloup.html',{'data':data,'data1':data1,'data2':data2,'data3':data3})
+        coursedata = Courses.objects.all()
+        return render(request, 'folloup.html',{'data':data,'data1':data1,'data2':data2,'data3':data3,'coursedata':coursedata})
+    else:
+        return redirect('/')
+
+# contactbook folloup print form id get is lead id
+def followup2(request, id):
+    if 'username' in request.session:
+        print("followup")
+        if request.method == 'POST':
+            print("followup1")
+            selected_value = request.POST['name']
+            if selected_value:
+                name, emp_id = selected_value.split('|')
+                # Now you have name and emp_id separately
+                # Do whatever you want with these values
+            else:
+                # Handle case when no option is selected
+                pass
+            status = request.POST['status']
+
+            name = request.POST['name1']
+            course = request.POST['course']
+            phone_no = request.POST['phone_no']
+            email = request.POST['email']
+            place = request.POST['place']
+            source = request.POST['source']
+            degree = request.POST['degree']
+
+            called_meadium = request.POST['called_meadium']
+            remark = request.POST['remark']
+
+            calldetails = Calldetails.objects.get(id=id)
+            calls_made = Employee_details.objects.get(emp_id=emp_id)
+            calls_updated_id = request.session.get('uid')
+            calls_updated = Employee_details.objects.get(id=calls_updated_id)
+
+            userdata = Folloup(calldetails=calldetails, remark=remark, called_meadium=called_meadium,
+                               calls_made=calls_made, calls_updated=calls_updated)
+            userdata.save()
+
+            current_followups = calldetails.no_of_followups
+            calldetails.no_of_followups = current_followups + 1
+            calldetails.save()
+
+            calldetails.lead.name = name
+            calldetails.lead.course = course
+            calldetails.lead.phone_no = phone_no
+            calldetails.lead.email = email
+            calldetails.lead.place = place
+            calldetails.lead.source = source
+            calldetails.lead.degree = degree
+            calldetails.lead.status = status
+            calldetails.lead.save()
+            return redirect('/')
+
+        #### contactbook page - lead id is get from contactbook page #####
+        calldet_id = Calldetails.objects.get(lead__id = id)
+        calldetails_id = calldet_id.id
+        print("1")
+        data = Calldetails.objects.filter(id=calldetails_id)
+        print("2")
+        data1 = Employee_details.objects.all()
+        print("3")
+        data2 = Folloup.objects.filter(calldetails__id=calldetails_id)
+        print("4")
+        data3 = Calldetails.objects.get(id=calldetails_id)
+        print("5")
+        coursedata = Courses.objects.all()
+        print("6")
+        return render(request, 'folloup_2.html',
+                      {'data': data, 'data1': data1, 'data2': data2, 'data3': data3, 'coursedata': coursedata})
     else:
         return redirect('/')
 
@@ -615,7 +690,7 @@ def need_following_export_to_excel(request):
 
         # Write headers to the first row only
         # Increase the height of the first row
-        ws.row_dimensions[1].height = 60  # Adjust height as needed
+        ws.row_dimensions[1].height = 30  # Adjust height as needed
 
         # # Remove color from empty cells
         # for row in ws.iter_rows():
@@ -669,6 +744,7 @@ def need_following_export_to_excel(request):
                 row.append(remark)
                 row.append(updated)
                 row.append(made_by)
+
 
             # Write the combined row to the worksheet
             ws.append(row)
@@ -1061,7 +1137,8 @@ def edit(request, id):
             # Redirect to the home page with refresh parameter
             return redirect('/')
         data = Lead.objects.filter(id=id)
-        return render(request,'edit.html',{'data':data})
+        coursedata = Courses.objects.all()
+        return render(request,'edit.html',{'data':data,'coursedata':coursedata})
     else:
         return redirect('/')
 

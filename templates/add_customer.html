@@ -52,10 +52,9 @@
                 <div class="col-sm-9">
                     <select class="form-control" id="course" name="course" style="color:white;">
                         <option value="">Not mentioned</option>
-                        <option value="A">A</option>
-                        <option value="B">B</option>
-                        <option value="C">C</option>
-                        <option value="D">D</option>
+                        {% for c in coursedata %}
+                          <option value="{{c.course}}">{{c.course}}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>

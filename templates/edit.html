@@ -45,19 +45,17 @@
                 {% if i.course %}
                     <select name="course" id="course">
                       <option value="{{i.course}}">{{i.course}}</option>
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                      <option value="C">C</option>
-                      <option value="D">D</option>
+                        {% for c in coursedata %}
+                          <option value="{{c.course}}">{{c.course}}</option>
+                        {% endfor %}
                     </select><br>
                 {% else %}
                     <!-- Handle the case where i.course is not available -->
                     <select name="course" id="course1">
                       <option value="">not mentioned</option>
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                      <option value="C">C</option>
-                      <option value="D">D</option>
+                        {% for c in coursedata %}
+                          <option value="{{c.course}}">{{c.course}}</option>
+                        {% endfor %}
                     </select><br>
                 {% endif %}
 
@@ -127,9 +125,10 @@
                             // Handle success response
                             console.log('Form submitted successfully');
                             // You can optionally close the popup or perform any other action here
-                            document.getElementById('callPopup').style.display = 'none';
+                            //  document.getElementById('callPopup').style.display = 'none';
+                            console.log('hi');
                             location.reload();
-                            // closePopup(); // Close the popup after form submission
+                            closePopup(); // Close the popup after form submission
                         },
                         error: function(xhr, status, error) {
                             // Handle error response
