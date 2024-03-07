@@ -2,15 +2,16 @@
 {% block content %}
 {% load static %}
 <html>
+
 <head>
     <style>
-    /* Set text color to white */
-    .text-white {
-        color: white;
-    }
-
-</style>
+        /* Set text color to white */
+        .text-white {
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
     <div class="container">
         <h2 class="text-center">Upload CSV File</h2>
@@ -30,15 +31,15 @@
             </div>
         </form>
 
-        <hr>
+        <br>
 
         <h2 class="text-center">Upload Details</h2>
-        <form method="post" class="details-form">
+        <form id="frm2" method="post" class="details-form">
             {% csrf_token %}
             <div class="form-group row">
                 <label for="phone_no" class="col-sm-3 col-form-label">PHONE NO:</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="phone_no" name="phone_no" style="color:white;">
+                    <input type="text" class="form-control" id="phone_no" name="phone_no" style="color:white;" required>
                 </div>
             </div>
             <div class="form-group row">
@@ -47,17 +48,32 @@
                     <input type="text" class="form-control" id="name" name="name" style="color:white;">
                 </div>
             </div>
+
+
+
+
             <div class="form-group row">
-                <label for="course" class="col-sm-3 col-form-label">COURSE:</label>
+                <label for="coursemode" class="col-sm-3 col-form-label">COURSE MODE:</label>
                 <div class="col-sm-9">
-                    <select class="form-control" id="course" name="course" style="color:white;">
-                        <option value="">Not mentioned</option>
-                        {% for c in coursedata %}
-                          <option value="{{c.course}}">{{c.course}}</option>
-                        {% endfor %}
+                    <select class="form-control" id="coursemode" name="coursemode" style="color:white;"
+                        onchange="updateCourseDropdown()" required>
+                        <option value="">select</option>
+                        <option value="Not mentioned">Not mentioned</option>
+                        <option value="internship">internship</option>
+                        <option value="workshop">workshop</option>
                     </select>
                 </div>
             </div>
+
+            <div class="form-group row">
+                <label for="course" class="col-sm-3 col-form-label">COURSE:</label>
+                <div class="col-sm-9">
+                    <select class="form-control" id="course" name="course" disabled>
+                        <option value="">Select Course Mode First</option>
+                    </select>
+                </div>
+            </div>
+
             <div class="form-group row">
                 <label for="email" class="col-sm-3 col-form-label">EMAIL:</label>
                 <div class="col-sm-9">
@@ -65,18 +81,13 @@
                 </div>
             </div>
             <div class="form-group row">
-                <label for="place" class="col-sm-3 col-form-label">PLACE:</label>
+                <label for="lead_date" class="col-sm-3 col-form-label">LEAD GIVEN DATE:</label>
                 <div class="col-sm-9">
-                    <input type="text" class="form-control" id="place" name="place" style="color:white;">
+                    <input type="date" class="form-control" id="lead_date" name="lead_date" value="{% now 'Y-m-d' %}"
+                        style="color:white;">
                 </div>
             </div>
             <div class="form-group row">
-                <label for="lead_date" class="col-sm-3 col-form-label">LEAD GIVEN DATE:</label>
-                <div class="col-sm-9">
-                    <input type="date" class="form-control" id="lead_date" name="lead_date" value="{% now 'Y-m-d' %}" style="color:white;">
-                </div>
-            </div>
-             <div class="form-group row">
                 <label for="place" class="col-sm-3 col-form-label">PLACE:</label>
                 <div class="col-sm-9">
                     <input type="text" class="form-control" id="place" name="place" style="color:white;">
@@ -109,6 +120,52 @@
             <p class="text-center text-black">{{ msg }}</p>
         </form>
     </div>
+    <script>
+        function updateCourseDropdown() {
+            var courseMode = document.getElementById("coursemode").value;
+            var courseSelect = document.getElementById("course");
+
+            // Clear existing options
+            courseSelect.innerHTML = "";
+
+            // Add "Select Course Mode First" option for user feedback
+            var defaultOption = document.createElement("option");
+            defaultOption.text = "Select Course Mode First";
+            defaultOption.value = "";
+            courseSelect.add(defaultOption);
+
+            if (courseMode) { // Only proceed if a course mode is selected
+                // Logic to fetch courses based on selected course mode (replace with your actual logic)
+                // replace this placeholder with your method to retrieve courses
+                var courseList = [];
+                {% for i in coursedata %}
+                courseList.push("{{ i.course }}");
+                {% endfor %}
+
+                var availableCourses = courseList
+
+                // Populate the course dropdown with retrieved courses
+                for (var i = 0; i < availableCourses.length; i++) {
+                    var option = document.createElement("option");
+                    option.text = availableCourses[i];
+                    option.value = availableCourses[i];
+                    courseSelect.add(option);
+                }
+
+                // Enable the course dropdown
+                courseSelect.disabled = false;
+            } else {
+                // Disable the course dropdown if no course mode is selected
+                courseSelect.disabled = true;
+            }
+        }
+
+        // Call updateCourseDropdown() initially to set the initial state (disabled)
+        updateCourseDropdown();
+
+    </script>
+
 </body>
+
 </html>
 {% endblock %}

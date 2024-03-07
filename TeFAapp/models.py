@@ -13,6 +13,7 @@ class Lead(models.Model):
     lead_given_date = models.DateField()
     lead_no = models.CharField(max_length=10, blank=True, null=True, validators=[alphanumeric])
     name = models.CharField(max_length= 50)
+    course_type = models.CharField(max_length=20, default="")
     course = models.CharField(max_length=50)
     phone_no = models.IntegerField()
     email = models.EmailField(max_length=30)

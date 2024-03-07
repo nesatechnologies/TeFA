@@ -56,6 +56,11 @@ def add_customer(request):
         if request.method == 'POST':
             phone_no = request.POST.get('phone_no')
             name = request.POST.get('name')
+            course_types = request.POST.get('coursemode')
+            if course_types == "Not mentioned":
+                course_type = ""
+            else:
+                course_type = course_types
             course = request.POST.get('course')
             email = request.POST.get('email')
             place = request.POST.get('place')
@@ -83,7 +88,6 @@ def add_customer(request):
 
 
             ### month first three letter taking part
-            print(f"$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$lead_date = {lead_date}")
             # Parse the date string
             date_string = lead_date
             date_object = datetime.strptime(date_string, "%Y-%m-%d")
@@ -97,45 +101,31 @@ def add_customer(request):
             date_object = datetime.strptime(date_string, "%Y-%m-%d")
             # Get the last two digits of the year
             last_two_digits_year = date_object.strftime("%y")
-            print("Last two digits of the year:", last_two_digits_year)
 
             ### retrieve last updated row from data base and compire to done operation
             if last_row:
                 # Access "lead date" attributes of the last row.
                 lead_given_date1 =last_row.lead_given_date
-                print("past lead_given_date:", lead_given_date1)
 
                 # Parse the date strings into datetime objects
-                print(type(lead_given_date1))
-                print(type(lead_date))
                 lead_given_date1_parse = datetime.strptime(str(lead_given_date1), "%Y-%m-%d")
                 lead_date_parse = datetime.strptime(lead_date, "%Y-%m-%d")
-                print(lead_given_date1_parse)
-                print(lead_date_parse)
 
                 ## comparing the previous row lead_date and new entered one lead_date
                 if lead_given_date1_parse == lead_date_parse:
-                    print("same")
                     # in the case of same date old one same lead_no is giving
                     lead_no = last_row.lead_no
                 else:
 
                     try:
                         ### check data before entered if lend date already entered take same lead_no( not only checking just previous row )
-                        print("different")
                         lended_date_details = Lead.objects.get(lead_given_date = lead_date)
-                        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-                        print(lended_date_details.lead_no)
-                        print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                         lead_no = lended_date_details.lead_no
 
                     except:
-                        print("different")
                         # split to a list to compire its month and year
                         x = str(lead_given_date1_parse).split("-")
                         y = str(lead_date_parse).split("-")
-                        print(x)
-                        print(y)
                         # in the case of different year or month compired to previous one just set val =1
                         if x[0] != y[0] or x[1] != y[1]:
                             val = 1
@@ -143,9 +133,7 @@ def add_customer(request):
                         else:
                             # in the case of previous and new lend date month & year same
                             bfore_lead_no= last_row.lead_no
-                            print(type(bfore_lead_no))
                             # taking number from previous lend no from last position and add 1 to it
-                            print(bfore_lead_no[-1])
                             a = bfore_lead_no[-1]
                             val = int(a) + 1
                             lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
@@ -155,7 +143,7 @@ def add_customer(request):
 
             # lead_no =english_month+'-'+last_two_digits_year+'-'+'L'+str(val)
 
-            data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source, degree=degree)
+            data = Lead(lead_given_date=lead_date, name=name, course=course, phone_no=phone_no, email=email, place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source, degree=degree, course_type=course_type)
             data.save()
             return redirect('home')
         coursedata = Courses.objects.all()
@@ -262,6 +250,11 @@ def call(request,id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
+            course_types = request.POST.get('coursemode')
+            if course_types == "Not mentioned":
+                course_type = ""
+            else:
+                course_type = course_types
 
             called_meadium = request.POST['called_meadium']
             emp_remark = request.POST['remark']
@@ -280,6 +273,7 @@ def call(request,id):
             lead.place = place
             lead.source = source
             lead.degree = degree
+            lead.course_type =course_type
             lead.save()
             # Redirect to the home page with refresh parameter
             return redirect('/')
@@ -313,6 +307,12 @@ def followup(request, id):
             source = request.POST['source']
             degree = request.POST['degree']
 
+            course_types = request.POST.get('coursemode')
+            if course_types == "Not mentioned":
+                course_type = ""
+            else:
+                course_type = course_types
+
             called_meadium = request.POST['called_meadium']
             remark = request.POST['remark']
 
@@ -332,6 +332,7 @@ def followup(request, id):
 
             calldetails.lead.name = name
             calldetails.lead.course = course
+            calldetails.lead.course_type = course_type
             calldetails.lead.phone_no = phone_no
             calldetails.lead.email = email
             calldetails.lead.place = place
@@ -375,6 +376,12 @@ def followup2(request, id):
             source = request.POST['source']
             degree = request.POST['degree']
 
+            course_types = request.POST.get('course_type')
+            if course_types == "Not mentioned":
+                course_type = ""
+            else:
+                course_type = course_types
+
             called_meadium = request.POST['called_meadium']
             remark = request.POST['remark']
 
@@ -399,6 +406,7 @@ def followup2(request, id):
             calldetails.lead.source = source
             calldetails.lead.degree = degree
             calldetails.lead.status = status
+            calldetails.lead.course_type = course_type
             calldetails.lead.save()
             return redirect('/')
 
@@ -445,32 +453,47 @@ def upload_csv(request):
                     if row[0] == 'SL.NO':
                         continue
                     else:
+                        print(row)
                         control_no = int(row[1])
+                        print("1")
                         lead_no = str(row[2])
+                        print("1.1")
 
                         # Input date string
                         date_string = str(row[3])
+                        print("1.2")
+                        print("***************")
+                        print(date_string)
+                        print("***************")
                         # Parse the date string into a datetime object
-                        date_object = datetime.strptime(date_string, "%d/%m/%Y")
+                        date_object = datetime.strptime(date_string, "%d-%m-%Y")
+                        print(date_object)
                         # Format the datetime object in the desired format
                         formatted_date = date_object.strftime("%Y-%m-%d")
+                        print(formatted_date)
                         lead_given_date = formatted_date
+                        print(lead_given_date)
+                        print("1.2.1")
 
                         source = ""
                         name = str(row[5])
+                        print("1.3")
                         phone_no = int(row[6])
                         email = (row[7])
+                        print("1.4")
                         place = str(row[8])
                         degree = str(row[9])
                         course = str(row[10])
                         remark = str(row[11])
+                        print("1.5")
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
                                     degree=degree)
                         data.save()
+                        print("2")
 
                         ##### initial call part
-                        initial_call = str(row[12])
+                        initial_call = str(row[13])
                         print(initial_call)
                         calls_made= Employee_details.objects.get(user_name=initial_call)
 
@@ -490,7 +513,7 @@ def upload_csv(request):
                         data2.save()
 
                         # need following part decument update
-                        new_data = row[14:]
+                        new_data = row[15:]
                         print(new_data)
                         sublist = []
                         for i, item in enumerate(new_data):
@@ -1132,7 +1155,13 @@ def edit(request, id):
             source = request.POST['source']
             degree = request.POST['degree']
 
-            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree)
+            course_types = request.POST.get('coursemode')
+            if course_types == "Not mentioned":
+                course_type = ""
+            else:
+                course_type = course_types
+
+            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type)
             print("post part")
             # Redirect to the home page with refresh parameter
             return redirect('/')

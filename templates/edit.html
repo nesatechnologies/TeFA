@@ -42,6 +42,21 @@
                     <input type="text" name="degree" placeholder="qualification not available"><br>
                 {% endif %}
 
+                {% if i.course_type %}
+                    <select name="coursemode" id="coursemode">
+                      <option value="{{i.course_type}}">{{i.course_type}}</option>
+                      <option value="internship">internship</option>
+                      <option value="workshop">workshop</option>
+                    </select><br>
+                {% else %}
+                    <!-- Handle the case where i.course is not available -->
+                    <select name="coursemode" id="coursemode1">
+                      <option value="Not mentioned">Not mentioned</option>
+                      <option value="internship">internship</option>
+                      <option value="workshop">workshop</option>
+                    </select><br>
+                {% endif %}
+
                 {% if i.course %}
                     <select name="course" id="course">
                       <option value="{{i.course}}">{{i.course}}</option>
