@@ -483,17 +483,18 @@ def upload_csv(request):
                         print("1.4")
                         place = str(row[8])
                         degree = str(row[9])
-                        course = str(row[10])
-                        remark = str(row[11])
+                        course_type = str(row[10])
+                        course = str(row[11])
+                        remark = str(row[12])
                         print("1.5")
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
-                                    degree=degree)
+                                    degree=degree, course_type=course_type)
                         data.save()
                         print("2")
 
                         ##### initial call part
-                        initial_call = str(row[13])
+                        initial_call = str(row[15])
                         print(initial_call)
                         calls_made= Employee_details.objects.get(user_name=initial_call)
 
@@ -506,14 +507,20 @@ def upload_csv(request):
 
 
                         lead = Lead.objects.get(id=data.id)
-                        lead.status = 2
+                        stat = str(row[13])
+                        if stat == "conformed":
+                            lead.status = 1
+                        elif stat == "need following":
+                            lead.status = 2
+                        elif stat == "denied":
+                            lead.status = 3
                         lead.save()
 
                         data2= Calldetails(lead=lead, calls_made=calls_made, emp_remark=initial_call_remark, called_datetime=initial_call_date, called_meadium=called_meadium, calls_updated=calls_updated)
                         data2.save()
 
                         # need following part decument update
-                        new_data = row[15:]
+                        new_data = row[17:]
                         print(new_data)
                         sublist = []
                         for i, item in enumerate(new_data):
@@ -528,22 +535,33 @@ def upload_csv(request):
                                 else:
                                     print(sublist)
                                     calldetails = Calldetails.objects.get(id=data2.id)
+                                    print("1.1")
                                     remark = sublist[2]
+                                    print("1.2")
                                     calls_made = Employee_details.objects.get(user_name=sublist[0])
+                                    print("1.3")
                                     calls_updated_id = request.session.get('uid')
+                                    print("1.4")
                                     calls_updated = Employee_details.objects.get(id=calls_updated_id)
+                                    print("1.5")
                                     called_meadium = ""
+                                    print("1.6")
 
                                     if sublist[1] == "":
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
                                                         called_meadium=called_meadium, calls_updated=calls_updated)
                                         data3.save()
+                                        print("2")
                                     else:
+                                        print("3")
+                                        print(sublist[1])
+                                        print(type(sublist[1]))
                                         # Parse the date string into a datetime object
-                                        date_object = datetime.strptime(sublist[1], "%d/%m/%Y")
+                                        date_object = datetime.strptime(sublist[1], "%d-%m-%Y")
                                         # Format the datetime object in the desired format
                                         formatted_date = date_object.strftime("%Y-%m-%d")
                                         called_datetime = formatted_date
+                                        print("4")
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
                                                         called_datetime=called_datetime, called_meadium=called_meadium,
                                                         calls_updated=calls_updated)
