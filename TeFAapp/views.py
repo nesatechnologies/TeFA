@@ -15,6 +15,8 @@ from django.db.models import Max
 
 from openpyxl.styles import Font, Color, Fill
 from openpyxl.styles import PatternFill
+from openpyxl.utils import get_column_letter
+from openpyxl.styles import Alignment
 
 from django.template.loader import render_to_string
 
@@ -485,7 +487,7 @@ def upload_csv(request):
                         degree = str(row[9])
                         course_type = str(row[10])
                         course = str(row[11])
-                        remark = str(row[12])
+                        remark = ""
                         print("1.5")
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
@@ -502,7 +504,7 @@ def upload_csv(request):
                         calls_updated = Employee_details.objects.get(id=calls_updated_id)
 
                         initial_call_date = lead_given_date
-                        initial_call_remark= ""
+                        initial_call_remark= str(row[12])
                         called_meadium=str(row[4])
 
 
@@ -660,6 +662,7 @@ def export_to_excel(request):
 
 def need_following_export_to_excel(request):
     if 'username' in request.session:
+        k = 0
 
         calldetails_data = Calldetails.objects.filter(lead__status=2)
 
@@ -687,47 +690,59 @@ def need_following_export_to_excel(request):
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
             if highest_followups > 0:  # Add check to avoid empty headers if no follow-ups
-                for _ in range(highest_followups):
-                    headers.extend(["", "Folloup Remark", "Folloup Updated", "Made By"])
+                for i in range(highest_followups):
+                    headers.extend(["", f"Follow-Up-{i+1}", "Date", "Remark"])
             return headers
 
         # Define base headers
         base_headers = [
+            "SL.NO",
             "Control No",
-            "Date Time Added",
+            "Date Added",
             "Lead Given Date",
             "Lead No",
             "Name",
+            "course type",
             "Course",
             "Phone No",
             "Email",
             "Place",
-            "Remark",
-            "Source",
-            "Degree",
+            "Lead Remark",
+            "Lead Source",
+            "Qualification",
+            "status",
             "",
             "Initial Employee Remark",
             "Initial Called Datetime",
+            "Source",
             "Initial Call Made",
         ]
-        red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')  # Red fill
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
 
         # Define white fill pattern
-        green_fill = PatternFill(start_color='50FD79', end_color='50FD79', fill_type='solid')  # green fill
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
+
+        # Define font style for bold
+        bold_font = Font(bold=True)
+        
 
         # Write headers to the first row with appropriate fill applied
         for col_idx, header in enumerate(headers, start=1):
             cell = ws.cell(row=1, column=col_idx)
             cell.value = header
 
-            if col_idx <= len(base_headers):  # Apply red fill to base headers
-                cell.fill = red_fill
-            else:  # Apply white fill to follow-up headers
-                cell.fill = green_fill
+            if cell.value:  # Check if cell value is not empty
+                if col_idx <= len(base_headers):  # Apply red fill to base headers
+                    cell.fill = yellow_fill
+                else:  # Apply white fill to follow-up headers
+                    cell.fill = green_fill
+
+            # Apply bold font to each header cell
+            cell.font = bold_font
 
         # Write headers to the first row only
         # Increase the height of the first row
@@ -739,7 +754,9 @@ def need_following_export_to_excel(request):
         #         if cell.value is None:
         #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
 
-        ws.append(headers)
+        # ws.append(headers)
+        # Set column width for each column
+
 
         for calldetail in calldetails_data:
             # Initialize empty lists to store folloup details
@@ -753,19 +770,22 @@ def need_following_export_to_excel(request):
             # Extract folloup details into separate lists
             for folloup in folloup_data:
                 folloup_remarks.append(folloup.remark)
-                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d %H:%M:%S"))  # Format date/time
+                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d"))  # Format date/time
                 call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
 
             # Extract Calldetails data
             row = []  # Create an empty row
 
             # Add lead details
+            k = k + 1
             row.extend([
+                k,
                 calldetail.lead.control_no,
                 calldetail.lead.date_time_added,
                 calldetail.lead.lead_given_date,
                 calldetail.lead.lead_no,
                 calldetail.lead.name,
+                calldetail.lead.course_type,
                 calldetail.lead.course,
                 calldetail.lead.phone_no,
                 calldetail.lead.email,
@@ -773,23 +793,80 @@ def need_following_export_to_excel(request):
                 calldetail.lead.remark,
                 calldetail.lead.source,
                 calldetail.lead.degree,
+                "need following",
+
                 "",
                 calldetail.emp_remark,
                 calldetail.called_datetime,
+                calldetail.called_meadium,
                 calldetail.calls_made.name,
             ])
 
             # Add folloup details with corresponding headings and empty columns
             for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
                 row.append("") # Add an empty column between each set of follow-up details
-                row.append(remark)
-                row.append(updated)
                 row.append(made_by)
+                row.append(updated)
+                row.append(remark)
 
 
             # Write the combined row to the worksheet
             ws.append(row)
 
+
+        ##### increase cell width ####
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column  # Get the column index
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Define grape colour fill pattern
+        grape_fill = PatternFill(start_color='ffccff', end_color='ffccff', fill_type='solid')  # grape fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Initial Call Made") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = grape_fill  # Apply red fill color to each cell
+
+        
+        # Iterate through each cell in the worksheet and set text alignment to center
+        for row in ws.iter_rows():
+            for cell in row:
+                alignment = Alignment(horizontal='center', vertical='center')  # Center alignment
+                cell.alignment = alignment
+
+        # Define font style for Calibri
+        calibri_font = Font(name='Calibri')
+        # Iterate through each cell in the worksheet and set text to calibri_font
+        for row in ws.iter_rows():
+            for cell in row:
+                # Apply Calibri font to each header cell
+                cell.font = calibri_font
 
 
         # Create a response object
