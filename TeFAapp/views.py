@@ -458,7 +458,7 @@ def upload_csv(request):
                         print(row)
                         control_no = int(row[1])
                         print("1")
-                        lead_no = str(row[2])
+                        lead_no = str(row[4])
                         print("1.1")
 
                         # Input date string
@@ -477,17 +477,17 @@ def upload_csv(request):
                         print(lead_given_date)
                         print("1.2.1")
 
-                        source = ""
+                        source = str(row[12])
                         name = str(row[5])
                         print("1.3")
-                        phone_no = int(row[6])
-                        email = (row[7])
+                        phone_no = int(row[8])
+                        email = (row[9])
                         print("1.4")
-                        place = str(row[8])
-                        degree = str(row[9])
-                        course_type = str(row[10])
-                        course = str(row[11])
-                        remark = ""
+                        place = str(row[10])
+                        degree = str(row[13])
+                        course_type = str(row[6])
+                        course = str(row[7])
+                        remark = str(row[11])
                         print("1.5")
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
@@ -496,25 +496,46 @@ def upload_csv(request):
                         print("2")
 
                         ##### initial call part
-                        initial_call = str(row[15])
+                        initial_call = str(row[19])
                         print(initial_call)
                         calls_made= Employee_details.objects.get(user_name=initial_call)
 
                         calls_updated_id = request.session.get('uid')
                         calls_updated = Employee_details.objects.get(id=calls_updated_id)
 
-                        initial_call_date = lead_given_date
-                        initial_call_remark= str(row[12])
-                        called_meadium=str(row[4])
+
+
+
+                        print("*******date string********")
+                        # Input date string
+                        date_string2 = str(row[17])
+                        print("1.2")
+                        print("***************")
+                        print(date_string2)
+                        print("***************")
+                        # Parse the date string into a datetime object
+                        date_object2 = datetime.strptime(date_string2, "%d-%m-%Y")
+                        print(date_object2)
+                        # Format the datetime object in the desired format
+                        formatted_date2 = date_object2.strftime("%Y-%m-%d")
+                        print(formatted_date2)
+                        initial_call_date = formatted_date2
+
+
+                        initial_call_remark= str(row[16])
+                        called_meadium=str(row[18])
 
 
                         lead = Lead.objects.get(id=data.id)
-                        stat = str(row[13])
+                        stat = str(row[14])
                         if stat == "conformed":
+                            print("conformed")
                             lead.status = 1
                         elif stat == "need following":
+                            print("need following")
                             lead.status = 2
                         elif stat == "denied":
+                            print("denied")
                             lead.status = 3
                         lead.save()
 
@@ -522,7 +543,7 @@ def upload_csv(request):
                         data2.save()
 
                         # need following part decument update
-                        new_data = row[17:]
+                        new_data = row[21:]
                         print(new_data)
                         sublist = []
                         for i, item in enumerate(new_data):
@@ -594,14 +615,19 @@ def contactbook(request):
 
 def searchresult(request):
     if 'username' in request.session:
-        products= None
-        query= None
-        if 'q' in request.GET:
-            query = request.GET.get('q')
-            products= Lead.objects.all().filter(Q(control_no__contains = query) | Q(date_time_added__contains = query) | Q(lead_given_date__contains = query) | Q(lead_no__contains = query) | Q(name__contains = query) | Q(course__contains = query) | Q(phone_no__contains = query) | Q(email__contains = query) | Q(place__contains = query) | Q(remark__contains = query) | Q(status__contains = query) | Q(source__contains = query) | Q(degree__contains = query))
-            for m in products:
-                data = Calldetails.objects.filter(lead__id = m.id)
-            return render(request, 'search.html', {'query':query, 'products':products, 'data':data})
+        try:
+            products= None
+            query= None
+            if 'q' in request.GET:
+                query = request.GET.get('q')
+                products= Lead.objects.all().filter(Q(control_no__contains = query) | Q(date_time_added__contains = query) | Q(lead_given_date__contains = query) | Q(lead_no__contains = query) | Q(name__contains = query) | Q(course__contains = query) | Q(phone_no__contains = query) | Q(email__contains = query) | Q(place__contains = query) | Q(remark__contains = query) | Q(status__contains = query) | Q(source__contains = query) | Q(degree__contains = query))
+                for m in products:
+                    data = Calldetails.objects.filter(lead__id = m.id)
+                return render(request, 'search.html', {'query':query, 'products':products, 'data':data})
+        except:
+            if 'q' in request.GET:
+                query = request.GET.get('q')
+            return render(request, 'search.html', {'query':query})
     else:
         return redirect('/')
 
@@ -620,16 +646,16 @@ def export_to_excel(request):
         # ws.append(headers)
 
         # Define a red fill style
-        red_fill = PatternFill(start_color='FF0000', end_color='FF0000', fill_type='solid')
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')
 
-        headers = ["Control No", "Date Time Added", "Lead Given Date", "Lead No", "Name", "Course", "Phone No", "Email",
-                   "Place", "Remark", "Status", "Source", "Degree"]
+        headers = ["Control No", "Date Added", "Lead Given Date", "Lead No", "Name", "Course type", "Course", "Phone No", "Email",
+                   "Place", "Remark", "Source", "Qualification", "Status"]
 
         # Write headers with the red fill style
         for col_idx, header in enumerate(headers, start=1):
             cell = ws.cell(row=1, column=col_idx)
             cell.value = header
-            cell.fill = red_fill
+            cell.fill = yellow_fill
 
         # Fetch data from Lead model
         leads = Lead.objects.all()
@@ -646,8 +672,56 @@ def export_to_excel(request):
             elif lead.status == 3:
                 statusval = "denied"
 
-            row = [lead.control_no, lead.date_time_added, lead.lead_given_date, lead.lead_no, lead.name, lead.course, lead.phone_no, lead.email, lead.place, lead.remark, statusval, lead.source, lead.degree]
+            row = [lead.control_no, lead.date_time_added, lead.lead_given_date, lead.lead_no, lead.name, lead.course_type, lead.course, lead.phone_no, lead.email, lead.place, lead.remark, lead.source, lead.degree, statusval]
             ws.append(row)
+
+
+            ##### increase cell width ####
+            for col in ws.columns:
+                max_length = 0
+                column = col[0].column  # Get the column index
+                for cell in col:
+                    try:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                    except:
+                        pass
+                adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+                ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+                # Define red fill pattern
+                red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+                # Get the index of the "Phone No" column
+                phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+                # Iterate through each cell in the "Phone No" column
+                for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+                    for cell in row:
+                        cell.fill = red_fill  # Apply red fill color to each cell
+
+
+                # Define red fill pattern
+                red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+                green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
+                blue_fill = PatternFill(start_color='60cbf3', end_color='60cbf3', fill_type='solid')  # blue fill
+                dark_fill = PatternFill(start_color='DCDCDC', end_color='DCDCDC', fill_type='solid')  # dark fill
+
+                # Get the index of the "Phone No" column
+                status_no_column_index = headers.index("Status") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+                # Iterate through each cell in the "Phone No" column
+                for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=status_no_column_index, max_col=status_no_column_index):
+                    for cell in row:
+                        if cell.value == "wait for call":
+                            cell.fill = blue_fill  # Apply blue fill color to each cell
+                        if cell.value == "conformed":
+                            cell.fill = green_fill  # Apply green fill color to each cell
+                        if cell.value == "need following":
+                            cell.fill = dark_fill  # Apply dark fill color to each cell
+                        if cell.value == "denied":
+                            cell.fill = red_fill  # Apply red fill color to each cell
 
         # Create a response object
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -770,7 +844,7 @@ def need_following_export_to_excel(request):
             # Extract folloup details into separate lists
             for folloup in folloup_data:
                 folloup_remarks.append(folloup.remark)
-                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d"))  # Format date/time
+                folloup_updated.append(folloup.called_datetime.strftime("%d-%m-%Y"))  # Format date/time
                 call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
 
             # Extract Calldetails data
@@ -781,8 +855,8 @@ def need_following_export_to_excel(request):
             row.extend([
                 k,
                 calldetail.lead.control_no,
-                calldetail.lead.date_time_added,
-                calldetail.lead.lead_given_date,
+                calldetail.lead.date_time_added.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_given_date.strftime("%d-%m-%Y"),
                 calldetail.lead.lead_no,
                 calldetail.lead.name,
                 calldetail.lead.course_type,
@@ -797,9 +871,9 @@ def need_following_export_to_excel(request):
 
                 "",
                 calldetail.emp_remark,
-                calldetail.called_datetime,
+                calldetail.called_datetime.strftime("%d-%m-%Y"),
                 calldetail.called_meadium,
-                calldetail.calls_made.name,
+                calldetail.calls_made.user_name,
             ])
 
             # Add folloup details with corresponding headings and empty columns
@@ -881,6 +955,7 @@ def need_following_export_to_excel(request):
 
 def conformed_export_to_excel(request):
     if 'username' in request.session:
+        k = 0
 
         calldetails_data = Calldetails.objects.filter(lead__status=1)
 
@@ -904,40 +979,77 @@ def conformed_export_to_excel(request):
 
         def get_folloup_headers():
             highest_followups = Calldetails.objects.aggregate(Max('no_of_followups'))['no_of_followups__max']
-            highest_followups -=1
+            highest_followups -= 1
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
             if highest_followups > 0:  # Add check to avoid empty headers if no follow-ups
-                for _ in range(highest_followups):
-                    headers.extend(["", "Folloup Remark", "Folloup Updated", "Made By"])
+                for i in range(highest_followups):
+                    headers.extend(["", f"Follow-Up-{i+1}", "Date", "Remark"])
             return headers
 
         # Define base headers
         base_headers = [
+            "SL.NO",
             "Control No",
-            "Date Time Added",
+            "Date Added",
             "Lead Given Date",
             "Lead No",
             "Name",
+            "course type",
             "Course",
             "Phone No",
             "Email",
             "Place",
-            "Remark",
-            "Source",
-            "Degree",
+            "Lead Remark",
+            "Lead Source",
+            "Qualification",
+            "status",
             "",
             "Initial Employee Remark",
             "Initial Called Datetime",
+            "Source",
             "Initial Call Made",
         ]
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
+
+        # Define white fill pattern
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
 
+        # Define font style for bold
+        bold_font = Font(bold=True)
+        
+
+        # Write headers to the first row with appropriate fill applied
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+
+            if cell.value:  # Check if cell value is not empty
+                if col_idx <= len(base_headers):  # Apply red fill to base headers
+                    cell.fill = yellow_fill
+                else:  # Apply white fill to follow-up headers
+                    cell.fill = green_fill
+
+            # Apply bold font to each header cell
+            cell.font = bold_font
+
         # Write headers to the first row only
-        ws.append(headers)
+        # Increase the height of the first row
+        ws.row_dimensions[1].height = 30  # Adjust height as needed
+
+        # # Remove color from empty cells
+        # for row in ws.iter_rows():
+        #     for cell in row:
+        #         if cell.value is None:
+        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+
+        # ws.append(headers)
+        # Set column width for each column
+
 
         for calldetail in calldetails_data:
             # Initialize empty lists to store folloup details
@@ -951,19 +1063,22 @@ def conformed_export_to_excel(request):
             # Extract folloup details into separate lists
             for folloup in folloup_data:
                 folloup_remarks.append(folloup.remark)
-                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d %H:%M:%S"))  # Format date/time
+                folloup_updated.append(folloup.called_datetime.strftime("%d-%m-%Y"))  # Format date/time
                 call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
 
             # Extract Calldetails data
             row = []  # Create an empty row
 
             # Add lead details
+            k = k + 1
             row.extend([
+                k,
                 calldetail.lead.control_no,
-                calldetail.lead.date_time_added,
-                calldetail.lead.lead_given_date,
+                calldetail.lead.date_time_added.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_given_date.strftime("%d-%m-%Y"),
                 calldetail.lead.lead_no,
                 calldetail.lead.name,
+                calldetail.lead.course_type,
                 calldetail.lead.course,
                 calldetail.lead.phone_no,
                 calldetail.lead.email,
@@ -971,21 +1086,81 @@ def conformed_export_to_excel(request):
                 calldetail.lead.remark,
                 calldetail.lead.source,
                 calldetail.lead.degree,
+                "conformed",
+
                 "",
                 calldetail.emp_remark,
-                calldetail.called_datetime,
-                calldetail.calls_made.name,
+                calldetail.called_datetime.strftime("%d-%m-%Y"),
+                calldetail.called_meadium,
+                calldetail.calls_made.user_name,
             ])
 
             # Add folloup details with corresponding headings and empty columns
             for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
                 row.append("") # Add an empty column between each set of follow-up details
-                row.append(remark)
-                row.append(updated)
                 row.append(made_by)
+                row.append(updated)
+                row.append(remark)
+
 
             # Write the combined row to the worksheet
             ws.append(row)
+
+
+        ##### increase cell width ####
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column  # Get the column index
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Define grape colour fill pattern
+        grape_fill = PatternFill(start_color='ffccff', end_color='ffccff', fill_type='solid')  # grape fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Initial Call Made") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = grape_fill  # Apply red fill color to each cell
+
+        
+        # Iterate through each cell in the worksheet and set text alignment to center
+        for row in ws.iter_rows():
+            for cell in row:
+                alignment = Alignment(horizontal='center', vertical='center')  # Center alignment
+                cell.alignment = alignment
+
+        # Define font style for Calibri
+        calibri_font = Font(name='Calibri')
+        # Iterate through each cell in the worksheet and set text to calibri_font
+        for row in ws.iter_rows():
+            for cell in row:
+                # Apply Calibri font to each header cell
+                cell.font = calibri_font
+
 
         # Create a response object
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -999,6 +1174,7 @@ def conformed_export_to_excel(request):
 
 def denied_export_to_excel(request):
     if 'username' in request.session:
+        k = 0
 
         calldetails_data = Calldetails.objects.filter(lead__status=3)
 
@@ -1026,36 +1202,73 @@ def denied_export_to_excel(request):
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
             if highest_followups > 0:  # Add check to avoid empty headers if no follow-ups
-                for _ in range(highest_followups):
-                    headers.extend(["", "Folloup Remark", "Folloup Updated", "Made By"])
+                for i in range(highest_followups):
+                    headers.extend(["", f"Follow-Up-{i+1}", "Date", "Remark"])
             return headers
 
         # Define base headers
         base_headers = [
+            "SL.NO",
             "Control No",
-            "Date Time Added",
+            "Date Added",
             "Lead Given Date",
             "Lead No",
             "Name",
+            "course type",
             "Course",
             "Phone No",
             "Email",
             "Place",
-            "Remark",
-            "Source",
-            "Degree",
+            "Lead Remark",
+            "Lead Source",
+            "Qualification",
+            "status",
             "",
             "Initial Employee Remark",
             "Initial Called Datetime",
+            "Source",
             "Initial Call Made",
         ]
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
+
+        # Define white fill pattern
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
 
+        # Define font style for bold
+        bold_font = Font(bold=True)
+        
+
+        # Write headers to the first row with appropriate fill applied
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+
+            if cell.value:  # Check if cell value is not empty
+                if col_idx <= len(base_headers):  # Apply red fill to base headers
+                    cell.fill = yellow_fill
+                else:  # Apply white fill to follow-up headers
+                    cell.fill = green_fill
+
+            # Apply bold font to each header cell
+            cell.font = bold_font
+
         # Write headers to the first row only
-        ws.append(headers)
+        # Increase the height of the first row
+        ws.row_dimensions[1].height = 30  # Adjust height as needed
+
+        # # Remove color from empty cells
+        # for row in ws.iter_rows():
+        #     for cell in row:
+        #         if cell.value is None:
+        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+
+        # ws.append(headers)
+        # Set column width for each column
+
 
         for calldetail in calldetails_data:
             # Initialize empty lists to store folloup details
@@ -1069,19 +1282,22 @@ def denied_export_to_excel(request):
             # Extract folloup details into separate lists
             for folloup in folloup_data:
                 folloup_remarks.append(folloup.remark)
-                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d %H:%M:%S"))  # Format date/time
+                folloup_updated.append(folloup.called_datetime.strftime("%d-%m-%Y"))  # Format date/time
                 call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
 
             # Extract Calldetails data
             row = []  # Create an empty row
 
             # Add lead details
+            k = k + 1
             row.extend([
+                k,
                 calldetail.lead.control_no,
-                calldetail.lead.date_time_added,
-                calldetail.lead.lead_given_date,
+                calldetail.lead.date_time_added.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_given_date.strftime("%d-%m-%Y"),
                 calldetail.lead.lead_no,
                 calldetail.lead.name,
+                calldetail.lead.course_type,
                 calldetail.lead.course,
                 calldetail.lead.phone_no,
                 calldetail.lead.email,
@@ -1089,21 +1305,81 @@ def denied_export_to_excel(request):
                 calldetail.lead.remark,
                 calldetail.lead.source,
                 calldetail.lead.degree,
+                "denied",
+
                 "",
                 calldetail.emp_remark,
-                calldetail.called_datetime,
-                calldetail.calls_made.name,
+                calldetail.called_datetime.strftime("%d-%m-%Y"),
+                calldetail.called_meadium,
+                calldetail.calls_made.user_name,
             ])
 
             # Add folloup details with corresponding headings and empty columns
             for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
                 row.append("") # Add an empty column between each set of follow-up details
-                row.append(remark)
-                row.append(updated)
                 row.append(made_by)
+                row.append(updated)
+                row.append(remark)
+
 
             # Write the combined row to the worksheet
             ws.append(row)
+
+
+        ##### increase cell width ####
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column  # Get the column index
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Define grape colour fill pattern
+        grape_fill = PatternFill(start_color='ffccff', end_color='ffccff', fill_type='solid')  # grape fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Initial Call Made") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = grape_fill  # Apply red fill color to each cell
+
+        
+        # Iterate through each cell in the worksheet and set text alignment to center
+        for row in ws.iter_rows():
+            for cell in row:
+                alignment = Alignment(horizontal='center', vertical='center')  # Center alignment
+                cell.alignment = alignment
+
+        # Define font style for Calibri
+        calibri_font = Font(name='Calibri')
+        # Iterate through each cell in the worksheet and set text to calibri_font
+        for row in ws.iter_rows():
+            for cell in row:
+                # Apply Calibri font to each header cell
+                cell.font = calibri_font
+
 
         # Create a response object
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -1115,8 +1391,10 @@ def denied_export_to_excel(request):
     else:
         return redirect('/')
 
+
 def single_person_export_to_excel(request, id):
     if 'username' in request.session:
+        k = 0
 
         calldetails_data = Calldetails.objects.filter(id=id)
 
@@ -1139,42 +1417,80 @@ def single_person_export_to_excel(request, id):
 
 
         def get_folloup_headers():
-            person = Calldetails.objects.get(id=id)
-            highest_followups = person.no_of_followups
-            highest_followups -=1
+            ## print no of followups tables based on no of its won followup no
+            calldetails_data1 = Calldetails.objects.get(id=id)
+            highest_followups = calldetails_data1.no_of_followups
+            highest_followups -= 1
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
             if highest_followups > 0:  # Add check to avoid empty headers if no follow-ups
-                for _ in range(highest_followups):
-                    headers.extend(["", "Folloup Remark", "Folloup Updated", "Made By"])
+                for i in range(highest_followups):
+                    headers.extend(["", f"Follow-Up-{i+1}", "Date", "Remark"])
             return headers
 
         # Define base headers
         base_headers = [
+            "SL.NO",
             "Control No",
-            "Date Time Added",
+            "Date Added",
             "Lead Given Date",
             "Lead No",
             "Name",
+            "course type",
             "Course",
             "Phone No",
             "Email",
             "Place",
-            "Remark",
-            "Source",
-            "Degree",
+            "Lead Remark",
+            "Lead Source",
+            "Qualification",
+            "status",
             "",
             "Initial Employee Remark",
             "Initial Called Datetime",
+            "Source",
             "Initial Call Made",
         ]
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
+
+        # Define white fill pattern
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
 
+        # Define font style for bold
+        bold_font = Font(bold=True)
+        
+
+        # Write headers to the first row with appropriate fill applied
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+
+            if cell.value:  # Check if cell value is not empty
+                if col_idx <= len(base_headers):  # Apply red fill to base headers
+                    cell.fill = yellow_fill
+                else:  # Apply white fill to follow-up headers
+                    cell.fill = green_fill
+
+            # Apply bold font to each header cell
+            cell.font = bold_font
+
         # Write headers to the first row only
-        ws.append(headers)
+        # Increase the height of the first row
+        ws.row_dimensions[1].height = 30  # Adjust height as needed
+
+        # # Remove color from empty cells
+        # for row in ws.iter_rows():
+        #     for cell in row:
+        #         if cell.value is None:
+        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+
+        # ws.append(headers)
+        # Set column width for each column
+
 
         for calldetail in calldetails_data:
             # Initialize empty lists to store folloup details
@@ -1188,19 +1504,22 @@ def single_person_export_to_excel(request, id):
             # Extract folloup details into separate lists
             for folloup in folloup_data:
                 folloup_remarks.append(folloup.remark)
-                folloup_updated.append(folloup.called_datetime.strftime("%Y-%m-%d %H:%M:%S"))  # Format date/time
+                folloup_updated.append(folloup.called_datetime.strftime("%d-%m-%Y"))  # Format date/time
                 call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
 
             # Extract Calldetails data
             row = []  # Create an empty row
 
             # Add lead details
+            k = k + 1
             row.extend([
+                k,
                 calldetail.lead.control_no,
-                calldetail.lead.date_time_added,
-                calldetail.lead.lead_given_date,
+                calldetail.lead.date_time_added.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_given_date.strftime("%d-%m-%Y"),
                 calldetail.lead.lead_no,
                 calldetail.lead.name,
+                calldetail.lead.course_type,
                 calldetail.lead.course,
                 calldetail.lead.phone_no,
                 calldetail.lead.email,
@@ -1208,33 +1527,97 @@ def single_person_export_to_excel(request, id):
                 calldetail.lead.remark,
                 calldetail.lead.source,
                 calldetail.lead.degree,
+                "need following",
+
                 "",
                 calldetail.emp_remark,
-                calldetail.called_datetime,
-                calldetail.calls_made.name,
+                calldetail.called_datetime.strftime("%d-%m-%Y"),
+                calldetail.called_meadium,
+                calldetail.calls_made.user_name,
             ])
 
             # Add folloup details with corresponding headings and empty columns
             for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
                 row.append("") # Add an empty column between each set of follow-up details
-                row.append(remark)
-                row.append(updated)
                 row.append(made_by)
+                row.append(updated)
+                row.append(remark)
+
 
             # Write the combined row to the worksheet
             ws.append(row)
 
+
+        ##### increase cell width ####
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column  # Get the column index
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Define grape colour fill pattern
+        grape_fill = PatternFill(start_color='ffccff', end_color='ffccff', fill_type='solid')  # grape fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Initial Call Made") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = grape_fill  # Apply red fill color to each cell
+
+        
+        # Iterate through each cell in the worksheet and set text alignment to center
+        for row in ws.iter_rows():
+            for cell in row:
+                alignment = Alignment(horizontal='center', vertical='center')  # Center alignment
+                cell.alignment = alignment
+
+        # Define font style for Calibri
+        calibri_font = Font(name='Calibri')
+        # Iterate through each cell in the worksheet and set text to calibri_font
+        for row in ws.iter_rows():
+            for cell in row:
+                # Apply Calibri font to each header cell
+                cell.font = calibri_font
+
+
         # Create a response object
         response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=needfollowing.xlsx'
+
+        
 
         print(calldetails_data)
         for i in calldetails_data:
             filename = f"{i.lead.control_no}.xlsx"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
 
-            # Save the workbook to the response
-            wb.save(response)
-            return response
+
+        # Save the workbook to the response
+        wb.save(response)
+        return response
     else:
         return redirect('/')
 
@@ -1249,6 +1632,8 @@ def edit(request, id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
+            status = request.POST['status']
+
 
             course_types = request.POST.get('coursemode')
             if course_types == "Not mentioned":
@@ -1256,7 +1641,7 @@ def edit(request, id):
             else:
                 course_type = course_types
 
-            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type)
+            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type, status=status)
             print("post part")
             # Redirect to the home page with refresh parameter
             return redirect('/')

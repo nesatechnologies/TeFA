@@ -5,129 +5,154 @@
 <head>
     <meta charset="UTF-8">
     <title>Call page</title>
+    <style>
+        .custom-input {
+    color: rgb(4, 4, 4);
+    background-color: #faf7f7; /* Change background color */
+    border-color: #f9f7f7; /* Change border color */
+    }
+    .custom-input:focus {
+    color: white; /* Set text color to white when input is focused */
+    }
+    .form-container {
+    border: 1px solid #ccc; /* Add border to the form container */
+    padding: 20px; /* Add padding to give space between the border and form elements */
+    background-color: #e4e6e4;
+    }
+
+    </style>
 </head>
 <body>
     <div class="container">
         {% for i in data %}
             <form id="followformdynamic" method="post">
                 {% csrf_token %}
-                <input type="hidden" name="personId" id="personId" value="{{i.id}}">
-                <input type="text" name="control_no" value="{{i.lead.control_no}}" disabled>
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <!-- Multiple non-breaking spaces -->
+                <div class="row">
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                        <div class="form-container">
+                            <p style="color: black;">STUDENT PART</p>
+                            <input type="hidden" name="personId" id="personId" value="{{i.id}}">
+                            <input type="text" class="form-control custom-input" name="control_no" value="{{i.lead.control_no}}" disabled> <br>
 
-                <a href="{% url 'single_person_export_to_excel' i.id %}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-download" viewBox="0 0 16 16">
-                      <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
-                      <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
-                    </svg>
-                <i class="bi bi-download"></i>
-                </a>
+                            {% if i.lead.name %}
+                                <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.name is not available -->
+                                <input type="text" class="form-control custom-input" name="name1" placeholder="Name not available"><br>
+                            {% endif %}
 
-                <br>
+                            {% if i.lead.phone_no %}
+                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.phone_no is not available -->
+                                <input type="text" class="form-control custom-input" name="phone_no" placeholder="phone no not available"><br>
+                            {% endif %}
 
-                    {% if i.lead.name %}
-                        <input type="text" name="name1" value="{{i.lead.name}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.name is not available -->
-                        <input type="text" name="name1" placeholder="Name not available"><br>
-                    {% endif %}
+                            {% if i.lead.email %}
+                                <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.email is not available -->
+                                <input type="text" class="form-control custom-input" name="email" placeholder="email not available"><br>
+                            {% endif %}
 
-                    {% if i.lead.phone_no %}
-                        <input type="text" name="phone_no" value="{{i.lead.phone_no}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.phone_no is not available -->
-                        <input type="text" name="phone_no" placeholder="phone no not available"><br>
-                    {% endif %}
+                            {% if i.lead.degree %}
+                                <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.email is not available -->
+                                <input type="text" class="form-control custom-input" name="degree" placeholder="qualification not available"><br>
+                            {% endif %}
 
-                    {% if i.lead.email %}
-                        <input type="text" name="email" value="{{i.lead.email}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.email is not available -->
-                        <input type="text" name="email" placeholder="email not available"><br>
-                    {% endif %}
+                            {% if i.lead.course_type %}
+                                <select name="course_type" class="form-control custom-input" id="course_type">
+                                    <option value="{{i.course}}">{{i.lead.course_type}}</option>
+                                    <option value="internship">internship</option>
+                                    <option value="workshop">workshop</option>
+                                </select><br>
+                            {% else %}
+                                <!-- Handle the case where i.course is not available -->
+                                <select name="course_type" class="form-control custom-input" id="course_type1">
+                                    <option value="Not mentioned">Not mentioned</option>
+                                    <option value="internship">internship</option>
+                                    <option value="workshop">workshop</option>
+                                </select><br>
+                            {% endif %}
 
-                    {% if i.lead.degree %}
-                        <input type="text" name="degree" value="{{i.lead.degree}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.email is not available -->
-                        <input type="text" name="degree" placeholder="qualification not available"><br>
-                    {% endif %}
+                            {% if i.lead.course %}
+                                <select name="course" class="form-control custom-input" id="course">
+                                    <option value="{{i.course}}">{{i.lead.course}}</option>
+                                    {% for c in coursedata %}
+                                        <option value="{{c.course}}">{{c.course}}</option>
+                                    {% endfor %}
+                                </select><br>
+                            {% else %}
+                                <!-- Handle the case where i.course is not available -->
+                                <select name="course" class="form-control custom-input" id="course1">
+                                    <option value="">not mentioned</option>
+                                    {% for c in coursedata %}
+                                        <option value="{{c.course}}">{{c.course}}</option>
+                                    {% endfor %}
+                                </select><br>
+                            {% endif %}
 
-                    {% if i.lead.course_type %}
-                        <select name="course_type" id="course_type">
-                          <option value="{{i.course}}">{{i.lead.course_type}}</option>
-                          <option value="internship">internship</option>
-                          <option value="workshop">workshop</option>
-                        </select><br>
-                    {% else %}
-                        <!-- Handle the case where i.course is not available -->
-                        <select name="course_type" id="course_type1">
-                          <option value="Not mentioned">Not mentioned</option>
-                          <option value="internship">internship</option>
-                          <option value="workshop">workshop</option>
-                        </select><br>
-                    {% endif %}
+                            {% if i.lead.place %}
+                                <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.place is not available -->
+                                <input type="text" class="form-control custom-input" name="place" placeholder="place not available"><br>
+                            {% endif %}
 
-                    {% if i.lead.course %}
-                        <select name="course" id="course">
-                          <option value="{{i.course}}">{{i.lead.course}}</option>
-                          {% for c in coursedata %}
-                          <option value="{{c.course}}">{{c.course}}</option>
-                          {% endfor %}
-                        </select><br>
-                    {% else %}
-                        <!-- Handle the case where i.course is not available -->
-                        <select name="course" id="course1">
-                          <option value="">not mentioned</option>
-                          {% for c in coursedata %}
-                          <option value="{{c.course}}">{{c.course}}</option>
-                          {% endfor %}
-                        </select><br>
-                    {% endif %}
+                            {% if i.lead.source %}
+                                <input type="text" class="form-control custom-input" name="source" value="{{i.lead.source}}" ><br>
+                            {% else %}
+                                <!-- Handle the case where i.email is not available -->
+                                <input type="text" class="form-control custom-input" name="source" placeholder="source not available"><br>
+                            {% endif %}
 
-                    {% if i.lead.place %}
-                        <input type="text" name="place" value="{{i.lead.place}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.place is not available -->
-                        <input type="text" name="place" placeholder="place not available"><br>
-                    {% endif %}
-
-                    {% if i.lead.source %}
-                        <input type="text" name="source" value="{{i.lead.source}}" ><br>
-                    {% else %}
-                        <!-- Handle the case where i.email is not available -->
-                        <input type="text" name="source" placeholder="source not available"><br>
-                    {% endif %}
-
-                    {% if i.lead.remark %}
-                        <input type="text" name="remark" value="{{i.lead.remark}}" disabled><br>
-                    {% else %}
-                        <!-- Handle the case where i.remark is not available -->
-                        <input type="text" name="remark" placeholder="remark not available" disabled><br>
-                    {% endif %}
+                            {% if i.lead.remark %}
+                                <input type="text" class="form-control custom-input" name="remark" value="{{i.lead.remark}}" disabled><br>
+                            {% else %}
+                                <!-- Handle the case where i.remark is not available -->
+                                <input type="text" class="form-control custom-input" name="remark" placeholder="remark not available" disabled><br>
+                            {% endif %}
+                        </div>
+                    </div>
 
 
 
-                <br>
-                <br>
-
-                <input type="text" name="control_no" value="{{i.lead.name}}" disabled><br>
-                <select name="name" id="name">
-                  <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
-                  {% for j in data1 %}
-                  <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
-                  {% endfor %}
-                </select><br>
-                <select name="called_meadium" id="called_meadium">
-                  <option value="phone">Phone</option>
-                  <option value="email">Email</option>
-                </select><br>
-                <select name="status" id="status">
-                  <option value="1">CONFORMED</option>
-                  <option value="2">NEED FOLLOWING</option>
-                  <option value="3">DENIED</option>
-                </select><br>
-                <input type="text" placeholder="Enter the Remark" name="remark"><br>
+                        <br>
+                        <br>
+                    <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">    
+                        <a href="{% url 'single_person_export_to_excel' i.id %}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-download" viewBox="0 0 16 16">
+                            <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
+                            <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
+                            </svg>
+                        <i class="bi bi-download"></i>
+                        </a>
+                        <br><br>
+                        <div class="form-container">
+                            <!-- <input type="text" class="form-control custom-input" name="control_no" value="{{i.lead.name}}" disabled><br> -->
+                            <p style="color: black;">EMPLOYEE PART</p>
+                            <select name="name" class="form-control custom-input" id="name">
+                                <option value="{{request.session.name}}|{{request.session.emp_id}}">{{request.session.name}}({{request.session.emp_id}})</option>
+                                {% for j in data1 %}
+                                    <option value="{{j.name}}|{{j.emp_id}}">{{j.name}}({{j.emp_id}})</option>
+                                {% endfor %}
+                            </select><br>
+                            <select name="called_meadium" class="form-control custom-input" id="called_meadium">
+                                <option value="phone">Phone</option>
+                                <option value="email">Email</option>
+                            </select><br>
+                            <select name="status" class="form-control custom-input" id="status">
+                                <option value="1">CONFORMED</option>
+                                <option value="2">NEED FOLLOWING</option>
+                                <option value="3">DENIED</option>
+                            </select><br>
+                            <input type="text" class="form-control custom-input" placeholder="Enter the Remark" name="remark"><br>
+                        </div>
+                    </div>
+                </div>     
+                <br> 
                 <input type="submit">
             </form>
 
@@ -140,30 +165,32 @@
 <br>
 <br>
 <!--  followup history part  -->
-{% if data3 %}
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title">Initial Call</h5>
-        <p class="card-text" style="color:white;">{{data3.emp_remark}}</p>
-        <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.calls_made.name}}</h6>
-        <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.called_datetime}}</h6>
-      </div>
-    </div>
+<div class="row">
+    <div class="col-md-12 ">
+        {% if data3 %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Initial Call</h5>
+                <p class="card-text" style="color:white;">{{data3.emp_remark}}</p>
+                <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.calls_made.name}}</h6>
+                <h6 class="card-subtitle mb-2 text-body-secondary">{{data3.called_datetime}}</h6>
+            </div>
+        </div>
+        {% endif %}
 
-{% endif %}
+        {% for i in data2 %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title"> Followup No-{{forloop.counter}}</h5>
+                <p class="card-text" style="color:white;">{{i.emp_remark}}</p>
+                <h6 class="card-subtitle mb-2 text-body-secondary">{{i.calls_made.name}}</h6>
+                <h6 class="card-subtitle mb-2 text-body-secondary">{{i.called_datetime}}</h6>
+            </div>
+        </div>
 
-{% for i in data2 %}
-    <br>
-    <div class="card" style="width: 18rem;">
-      <div class="card-body">
-        <h5 class="card-title"> Followup No-{{forloop.counter}}</h5>
-        <p class="card-text" style="color:white;">{{i.emp_remark}}</p>
-        <h6 class="card-subtitle mb-2 text-body-secondary">{{i.calls_made.name}}</h6>
-        <h6 class="card-subtitle mb-2 text-body-secondary">{{i.called_datetime}}</h6>
-      </div>
-    </div>
-
-{% endfor %}
+        {% endfor %}
+    </div> 
+</div>    
 
 <script>
    // Attach event listener to form submission
