@@ -9,31 +9,45 @@
         .text-white {
             color: white;
         }
+
+        .form-container {
+            border: 1px solid #ccc; /* Add border to the form container */
+            padding: 20px; /* Add padding to give space between the border and form elements */
+            background-color: #1b1c1c;
+            }
+
+
     </style>
 </head>
 
 <body>
+
     <div class="container">
-        <h2 class="text-center">Upload CSV File</h2>
-        {% if message %}
-        <p class="message">{{ message }}</p>
-        {% endif %}
-        <form action="/upload_csv/" method="post" enctype="multipart/form-data" class="upload-form">
-            {% csrf_token %}
-            <div class="form-group row">
-                <label for="csv_file" class="col-sm-3 col-form-label">Choose a CSV file:</label>
-                <div class="col-sm-6">
-                    <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv" required>
-                </div>
-                <div class="col-sm-3">
-                    <button type="submit" class="btn btn-success">Upload</button>
-                </div>
-            </div>
-        </form>
+        <div class="form-container">
+            <h4 style="color: rgb(253, 253, 253);" class="text-center">Upload CSV File</h4>
+            <br>
+                    {% if message %}
+                        <p class="message">{{ message }}</p>
+                    {% endif %}
+                <form action="/upload_csv/" method="post" enctype="multipart/form-data" class="upload-form">
+                    {% csrf_token %}
+                    <div class="form-group row">
+                        <label for="csv_file" class="col-sm-3 col-form-label text-sm-left">Choose a CSV file:</label>
+                        <div class="col-sm-8">
+                            <input type="file" class="form-control-file" id="csv_file" name="csv_file" accept=".csv" required>
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="submit" class="btn btn-success">Upload</button>
+                        </div>
+                    </div>
+                </form>
+        </div>
 
         <br>
+        <br>
 
-        <h2 class="text-center">Upload Details</h2>
+        <h4 class="text-center">Upload Details</h4>
+        <br>
         <form id="frm2" method="post" class="details-form">
             {% csrf_token %}
             <div class="form-group row">
@@ -114,7 +128,7 @@
             <!-- Other form fields go here -->
             <div class="form-group row">
                 <div class="col-sm-9 offset-sm-3">
-                    <button type="submit" class="btn btn-primary">Submit</button>
+                    <button type="submit" class="btn btn-success">Submit</button>
                 </div>
             </div>
             <p class="text-center text-black">{{ msg }}</p>

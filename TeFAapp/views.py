@@ -759,7 +759,14 @@ def need_following_export_to_excel(request):
 
 
         def get_folloup_headers():
-            highest_followups = Calldetails.objects.aggregate(Max('no_of_followups'))['no_of_followups__max']
+            #### print no of followup tables in ptint doc based on status
+            largenofollow = 0
+            for g in calldetails_data:
+                nofollow = g.no_of_followups
+                if largenofollow < nofollow:
+                    largenofollow = nofollow
+            highest_followups = largenofollow
+            highest_followups = highest_followups
             highest_followups -= 1
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
@@ -978,7 +985,15 @@ def conformed_export_to_excel(request):
 
 
         def get_folloup_headers():
-            highest_followups = Calldetails.objects.aggregate(Max('no_of_followups'))['no_of_followups__max']
+            #### print no of followup tables in ptint doc based on status
+            largenofollow = 0
+            for g in calldetails_data:
+                nofollow = g.no_of_followups
+                if largenofollow < nofollow:
+                    largenofollow = nofollow
+
+            print(largenofollow)
+            highest_followups = largenofollow
             highest_followups -= 1
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []
@@ -1197,7 +1212,13 @@ def denied_export_to_excel(request):
 
 
         def get_folloup_headers():
-            highest_followups = Calldetails.objects.aggregate(Max('no_of_followups'))['no_of_followups__max']
+            #### print no of followup tables in ptint doc based on status
+            largenofollow = 0
+            for g in calldetails_data:
+                nofollow = g.no_of_followups
+                if largenofollow < nofollow:
+                    largenofollow = nofollow
+            highest_followups = largenofollow
             highest_followups -= 1
             # folloup_count = calldetail.folloup_set.all().count()
             headers = []

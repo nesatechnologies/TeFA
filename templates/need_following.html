@@ -74,6 +74,24 @@
             overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
           }
 
+/* Style the first column */
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+
+/* Fix the second column next to the first column */
+th:nth-child(2), td:nth-child(2) {
+    position: sticky;
+    left: 50px; /* Adjust this value based on the width of the first column */
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+
+
+
 </style>
 </head>
 <body>
@@ -110,6 +128,17 @@
         <div class="table-responsive">
             <table class="table table-striped table-bordered ">
                 <tr>
+                    <th>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                        </svg>
+                        <i class="bi bi-plus"></i>
+                    </th>
+                    <th>
+                        <p>
+                            <abbr title="Number of Followups">N/F</abbr>
+                        </p>
+                    </th>
                     <th>ID</th>
                     <th>
                         <p>
@@ -128,23 +157,19 @@
                     <th>PHONE</th>
                     <th>EMAIL</th>
 
-                    <th>
-                        <p>
-                            <abbr title="Number of Followups">N/F</abbr>
-                        </p>
-                    </th>
-                    <th>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                        <i class="bi bi-plus"></i>
-                    </th>
-
                 </tr>
 
                 {% for i in data %}
                 <tr>
-
+                    <td>
+                        <a onclick="followopenPopup({{ i.id }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                            </svg>
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </td>
+                    <td> <input type="button" value={{i.no_of_followups}} onclick="openPopup({{ i.id }})"> </td>
                     <td>{{forloop.counter}}</td>
                     <td>{{i.lead.control_no}}</td>
                     <td>{{i.lead.lead_no}}</td>
@@ -158,17 +183,6 @@
                     <td>{{i.lead.remark}}</td>
                     <td>{{i.lead.phone_no}}</td>
                     <td>{{i.lead.email}}</td>
-
-                    <td> <input type="button" value={{i.no_of_followups}} onclick="openPopup({{ i.id }})"> </td>
-
-                    <td>
-                        <a onclick="followopenPopup({{ i.id }})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
-                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
-                            </svg>
-                            <i class="bi bi-arrow-right-circle"></i>
-                        </a>
-                    </td>
 
                 </tr>
                 {% endfor %}

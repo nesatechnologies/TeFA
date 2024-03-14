@@ -19,11 +19,20 @@
     padding: 20px; /* Add padding to give space between the border and form elements */
     background-color: #e4e6e4;
     }
+    .container1 {
+    border: 1px solid #ccc; /* Add border to the form container */
+    padding: 5px; /* Add padding to give space between the border and form elements */
+    background-color: #e4e6e4;
+    }
 
     </style>
 </head>
 <body>
     <div class="container">
+        <div class="container1">
+            <h4 style="text-align: center; color: black;">INITIAL CALL</h4>
+        </div>
+        <br>
         {% for i in data %}
             <form id="followformdynamic" method="post">
                 {% csrf_token %}
@@ -38,28 +47,28 @@
                                 <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
                             {% else %}
                                 <!-- Handle the case where i.name is not available -->
-                                <input type="text" class="form-control custom-input" name="name1" placeholder="Name not available"><br>
+                                <input type="text" class="form-control custom-input" name="name1" placeholder="Enter the Name"><br>
                             {% endif %}
 
                             {% if i.lead.phone_no %}
-                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" ><br>
+                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required><br>
                             {% else %}
                                 <!-- Handle the case where i.phone_no is not available -->
-                                <input type="text" class="form-control custom-input" name="phone_no" placeholder="phone no not available"><br>
+                                <input type="text" class="form-control custom-input" name="phone_no" placeholder="Enter the Phone" required><br>
                             {% endif %}
 
                             {% if i.lead.email %}
                                 <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
-                                <input type="text" class="form-control custom-input" name="email" placeholder="email not available"><br>
+                                <input type="text" class="form-control custom-input" name="email" placeholder="Enter the Email"><br>
                             {% endif %}
 
                             {% if i.lead.degree %}
                                 <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
-                                <input type="text" class="form-control custom-input" name="degree" placeholder="qualification not available"><br>
+                                <input type="text" class="form-control custom-input" name="degree" placeholder="Enter the Qualification"><br>
                             {% endif %}
 
                             {% if i.lead.course_type %}
@@ -98,14 +107,14 @@
                                 <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
                             {% else %}
                                 <!-- Handle the case where i.place is not available -->
-                                <input type="text" class="form-control custom-input" name="place" placeholder="place not available"><br>
+                                <input type="text" class="form-control custom-input" name="place" placeholder="Enter the Place"><br>
                             {% endif %}
 
                             {% if i.lead.source %}
-                                <input type="text" class="form-control custom-input" name="source" value="{{i.lead.source}}" ><br>
+                                <input type="text" class="form-control custom-input" name="source" value="{{i.lead.source}}" disabled><br>
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
-                                <input type="text" class="form-control custom-input" name="source" placeholder="source not available"><br>
+                                <input type="text" class="form-control custom-input" name="source" placeholder="source not available" disabled><br>
                             {% endif %}
 
                             {% if i.lead.remark %}
@@ -153,7 +162,7 @@
                     </div>
                 </div>     
                 <br> 
-                <input type="submit">
+                <input type="submit" class="btn btn-success">
             </form>
 
         {% endfor %}
