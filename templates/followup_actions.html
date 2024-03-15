@@ -1,0 +1,59 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+  padding: 15px;
+  background-color: black;
+
+}
+h4{
+color: black;
+}
+/* Style specific columns */
+th:nth-child(5), td:nth-child(5) {
+  background-color: #1b1c1c; /* Light yellow */
+}
+</style>
+</head>
+<body>
+    {% if data1 %}
+        <h4><u>Followups Table</u></h4>
+        <table id="FollowupsTable">
+            <tr>
+                <th>ID</th>
+                <th>CALL REMARK</th>
+                <th>DATE</th>
+                <th>MEADIUM</th>
+                <th>CALL MADE BY</th>
+                <th>UPDATED BY</th>
+            </tr>
+
+
+            <tr>
+                <td>{{1}}</td>
+                <td>{{data1.emp_remark}}</td>
+                <td>{{data1.called_datetime}}</td>
+                <td>{{data1.called_meadium}}</td>
+                <td>{{data1.calls_made.name}}</td>
+                <td>{{data1.calls_updated.name}}</td>
+            </tr>
+
+            {% for i in data %}
+            <tr>
+                <td>{{forloop.counter|add:1}}</td>
+                <td>{{i.remark}}</td>
+                <td>{{i.called_datetime}}</td>
+                <td>{{i.called_meadium}}</td>
+                <td>{{i.calls_made.name}}</td>
+                <td>{{i.calls_updated.name}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>edit</title>
+    <style>
+            .custom-input {
+        color: rgb(4, 4, 4);
+        background-color: #faf7f7; /* Change background color */
+        border-color: #f9f7f7; /* Change border color */
+        }
+        .custom-input:focus {
+        color: white; /* Set text color to white when input is focused */
+        }
+        .form-container {
+        border: 1px solid #ccc; /* Add border to the form container */
+        padding: 20px; /* Add padding to give space between the border and form elements */
+        background-color: #e4e6e4;
+        }
+        .container1 {
+        border: 1px solid #ccc; /* Add border to the form container */
+        padding: 5px; /* Add padding to give space between the border and form elements */
+        background-color: #e4e6e4;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="container1">
+            <h4 style="text-align: center; color: black;">EDIT FORM</h4>
+        </div>
+        <br>
+        {% for i in data %}
+        <form id="dynamicForm" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-12 text-center">
+                    <div class="form-container">
+                        <input type="hidden" name="personId" id="personId" value="{{i.id}}">
+                        <input type="text" class="form-control custom-input" name="control_no" value="{{i.control_no}}" disabled><br>
+
+
+                        {% if i.name %}
+                            <input type="text" class="form-control custom-input" name="name1" value="{{i.name}}" ><br>
+                        {% else %}
+                            <!-- Handle the case where i.name is not available -->
+                            <input type="text" class="form-control custom-input" name="name1" placeholder="Enter the Name"><br>
+                        {% endif %}
+
+                        {% if i.phone_no %}
+                            <input type="text" class="form-control custom-input" name="phone_no" value="{{i.phone_no}}" required><br>
+                        {% else %}
+                            <!-- Handle the case where i.phone_no is not available -->
+                            <input type="text" class="form-control custom-input" name="phone_no" placeholder="Enter the Phone" required><br>
+                        {% endif %}
+
+                        {% if i.email %}
+                            <input type="text" class="form-control custom-input" name="email" value="{{i.email}}" ><br>
+                        {% else %}
+                            <!-- Handle the case where i.email is not available -->
+                            <input type="text" class="form-control custom-input" name="email" placeholder="Enter the Email"><br>
+                        {% endif %}
+
+                        {% if i.degree %}
+                            <input type="text" class="form-control custom-input" name="degree" value="{{i.degree}}" ><br>
+                        {% else %}
+                            <!-- Handle the case where i.email is not available -->
+                            <input type="text" class="form-control custom-input" name="degree" placeholder="Enter the Qualification"><br>
+                        {% endif %}
+
+                        {% if i.course_type %}
+                            <select name="coursemode" class="form-control custom-input" id="coursemode">
+                                <option value="{{i.course_type}}">{{i.course_type}}</option>
+                                <option value="internship">internship</option>
+                                <option value="workshop">workshop</option>
+                            </select><br>
+                        {% else %}
+                            <!-- Handle the case where i.course is not available -->
+                            <select name="coursemode" class="form-control custom-input" id="coursemode1">
+                                <option value="Not mentioned">Not mentioned</option>
+                                <option value="internship">internship</option>
+                                <option value="workshop">workshop</option>
+                            </select><br>
+                        {% endif %}
+
+                        {% if i.course %}
+                            <select name="course" class="form-control custom-input" id="course">
+                                <option value="{{i.course}}">{{i.course}}</option>
+                                    {% for c in coursedata %}
+                                        <option value="{{c.course}}">{{c.course}}</option>
+                                    {% endfor %}
+                            </select><br>
+                        {% else %}
+                            <!-- Handle the case where i.course is not available -->
+                            <select name="course" class="form-control custom-input" id="course1">
+                                <option value="">not mentioned</option>
+                                    {% for c in coursedata %}
+                                        <option value="{{c.course}}">{{c.course}}</option>
+                                    {% endfor %}
+                                </select><br>
+                        {% endif %}
+
+                        {% if i.place %}
+                            <input type="text" class="form-control custom-input" name="place" value="{{i.place}}" ><br>
+                        {% else %}
+                            <!-- Handle the case where i.place is not available -->
+                            <input type="text" class="form-control custom-input" name="place" placeholder="Enter the Place"><br>
+                        {% endif %}
+
+                        {% if i.source %}
+                            <input type="text" class="form-control custom-input" name="source" value="{{i.source}}" ><br>
+                        {% else %}
+                            <!-- Handle the case where i.email is not available -->
+                            <input type="text" class="form-control custom-input" name="source" placeholder="source not available"><br>
+                        {% endif %}
+
+                        {% if i.remark %}
+                            <input type="text" class="form-control custom-input" name="remark" value="{{i.remark}}" disabled><br>
+                        {% else %}
+                            <!-- Handle the case where i.remark is not available -->
+                            <input type="text" class="form-control custom-input" name="remark" placeholder="remark not available" disabled><br>
+                        {% endif %}
+
+                        {% if i.status != 0 %}
+                            <select name="status" class="form-control custom-input" id="status">
+                                {% if i.status == 1 %}
+                                    <option value="1">CONFORMED</option>
+                                {% endif %}
+                                {% if i.status == 2 %}
+                                    <option value="2">NEED FOLLOWING</option>
+                                {% endif %}
+                                {% if i.status == 3 %}
+                                    <option value="3">DENIED</option>
+                                {% endif %}
+                                <option value="1">CONFORMED</option>
+                                <option value="2">NEED FOLLOWING</option>
+                                <option value="3">DENIED</option>
+                            </select><br>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>    
+            <br>
+            <input type="submit" class="btn btn-success">
+        </form>
+        {% endfor %}
+        {% for msg in messages %}
+        {{msg}}
+        {% endfor %}
+    </div>
+
+<script>
+   // Attach event listener to form submission
+    $(document).on('submit', '#dynamicForm', function(event) {
+        console.log("Form submission event triggered");
+        // Prevent default form submission
+            event.preventDefault();
+
+            // Get the personId from the form or any other appropriate source
+            var personId = $('#personId').val();
+
+            // Call submitForm function to handle form submission
+            submitForm(personId);
+        });
+
+
+
+
+                // Function to handle form submission
+                function submitForm(personId) {
+                    console.log(personId);
+                    console.log("hia all");
+
+                    // Serialize form data
+                    var formData = $('#dynamicForm').serialize();
+                    console.log(formData)
+
+                    // Send POST request to save form data
+                    $.ajax({
+                        url: `/edit/${personId}/`, // Use personId variable here
+                        method: 'POST',
+                        data: formData,
+                        success: function(response) {
+                            // Handle success response
+                            console.log('Form submitted successfully');
+                            // You can optionally close the popup or perform any other action here
+                            //  document.getElementById('callPopup').style.display = 'none';
+                            console.log('hi');
+                            location.reload();
+                            closePopup(); // Close the popup after form submission
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error response
+                            console.error('Error submitting form:', error);
+                            // Optionally display an error message to the user
+                        }
+                    });
+                }
+
+
+</script>
+</body>
+</html>

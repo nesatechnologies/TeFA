@@ -1,6 +1,400 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
+<html>
+    <head>
+
+        <!-- CSS styles for the popup -->
+        <style>
+            /* CSS for white text color */
+            .table-responsive table tr th,
+            .table-responsive table tr td {
+                color: LightGrey;
+                }
 
 
+
+          /* Popup container styles */
+          .popup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+             /* Popup container styles */
+          .delpopup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .delpopup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+/* Style the first column */
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+
+/* Fix the second column next to the first column */
+th:nth-child(2), td:nth-child(2) {
+    position: sticky;
+    left: 50px; /* Adjust this value based on the width of the first column */
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+        </style>
+    </head>
+    <body>
+
+         <div class="row">
+
+             <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>CONFORMED</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0">{{conformed}}</h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="green" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                      </svg>
+                      <i class="bi bi-person-bounding-box"></i>
+                    </div>
+                  </div>
+                  <a href="{% url 'conformed' %}">view more</a>
+                </div>
+              </div>
+            </div>
+
+             <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>NEED FOLLOWING</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0">{{need_following}}</h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="orange" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                      </svg>
+                      <i class="bi bi-person-bounding-box"></i>
+                    </div>
+                  </div>
+                  <a href="{% url 'need_following' %}">view more</a>
+                </div>
+              </div>
+            </div>
+
+                 <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>DENIED</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0">{{denied}}</h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="red" class="bi bi-person-bounding-box" viewBox="0 0 16 16">
+                        <path d="M1.5 1a.5.5 0 0 0-.5.5v3a.5.5 0 0 1-1 0v-3A1.5 1.5 0 0 1 1.5 0h3a.5.5 0 0 1 0 1h-3zM11 .5a.5.5 0 0 1 .5-.5h3A1.5 1.5 0 0 1 16 1.5v3a.5.5 0 0 1-1 0v-3a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 1-.5-.5zM.5 11a.5.5 0 0 1 .5.5v3a.5.5 0 0 0 .5.5h3a.5.5 0 0 1 0 1h-3A1.5 1.5 0 0 1 0 14.5v-3a.5.5 0 0 1 .5-.5zm15 0a.5.5 0 0 1 .5.5v3a1.5 1.5 0 0 1-1.5 1.5h-3a.5.5 0 0 1 0-1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm8-9a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                      </svg>
+                      <i class="bi bi-person-bounding-box"></i>
+                    </div>
+                  </div>
+                  <a href="{% url 'denied' %}">view more</a>
+                </div>
+              </div>
+            </div>
+
+
+
+            <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>ADD CUSTOMERS</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0"></h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="yellow" class="bi bi-person-circle" viewBox="0 0 16 16">
+                        <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+                        <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+                      </svg>
+                      <i class="bi bi-person-circle"></i>
+                    </div>
+                  </div>
+                  <a href="{% url 'add_customer' %}">ADD</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>WAIT FOR CALL</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0">{{wait_call}}</h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="DeepSkyBlue" class="bi bi-telephone" viewBox="0 0 16 16">
+                          <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+                        </svg>
+                      <i class="bi bi-telephone"></i>
+                    </div>
+                  </div>
+                  <a href="#calltable">view more</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4 grid-margin">
+              <div class="card">
+                <div class="card-body">
+                  <h5>CONTACT BOOK</h5>
+                  <div class="row">
+                    <div class="col-8 col-sm-12 col-xl-8 my-auto">
+                      <div class="d-flex d-sm-block d-md-flex align-items-center">
+                        <h2 class="mb-0">{{no_contact}}</h2>
+                      </div>
+                    </div>
+                    <div class="col-4 col-sm-12 col-xl-4 text-center text-xl-right">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" fill="purple" class="bi bi-journal-medical" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v.634l.549-.317a.5.5 0 1 1 .5.866L9 6l.549.317a.5.5 0 1 1-.5.866L8.5 6.866V7.5a.5.5 0 0 1-1 0v-.634l-.549.317a.5.5 0 1 1-.5-.866L7 6l-.549-.317a.5.5 0 0 1 .5-.866l.549.317V4.5A.5.5 0 0 1 8 4zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5z"/>
+                        <path d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z"/>
+                        <path d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z"/>
+                      </svg>
+                      <i class="bi bi-journal-medical"></i>
+                    </div>
+                  </div>
+                  <a href="{% url 'contactbook' %}">view more</a>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+
+            {% if data %}
+            <h4><u id="calltable">WAIT FOR CALL</u></h4>
+         <div class="table-responsive">
+            <table class="table table-striped table-bordered ">
+                <tr>
+                  <th class="text-center">
+                    <p>
+                        <abbr title="Make Initial Call">ini call</abbr>
+                    </p>
+                  </th>
+                    <th>ID</th>
+                    <th>CONTROL NO</th>
+                    <th>LEAD NO</th>
+                    <th>LEAD DATE</th>
+                    <th>ADDED DATE</th>
+                    <th>NAME</th>
+                    <th>TYPE</th>
+                    <th>COURSE</th>
+                    <th>EMAIL</th>
+                    <th>PLACE</th>
+                    <th>REMARK</th>
+                    <th>PHONE</th>
+                    <th class="text-center">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                        </svg>
+                        <i class="bi bi-plus"></i>
+                    </th>
+
+                </tr>
+
+                {% for i in data %}
+                <tr>
+                    <!-- Button or link to open the popup -->
+                    <td>
+                      <a onclick="openPopup({{ i.id }})">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-telephone" viewBox="0 0 16 16">
+                            <path d="M3.654 1.328a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.6 17.6 0 0 0 4.168 6.608 17.6 17.6 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.68.68 0 0 0-.58-.122l-2.19.547a1.75 1.75 0 0 1-1.657-.459L5.482 8.062a1.75 1.75 0 0 1-.46-1.657l.548-2.19a.68.68 0 0 0-.122-.58zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.68.68 0 0 0 .178.643l2.457 2.457a.68.68 0 0 0 .644.178l2.189-.547a1.75 1.75 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.6 18.6 0 0 1-7.01-4.42 18.6 18.6 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877z"/>
+                          </svg>
+                          <i class="bi bi-telephone"></i>
+                      </a>
+                  </td>
+                  <!-- Popup container -->
+                    <td>{{forloop.counter}}</td>
+                    <td>{{i.control_no}}</td>
+                    <td>{{i.lead_no}}</td>
+                    <td>{{i.lead_given_date}}</td>
+                    <td>{{i.date_time_added}}</td>
+                    <td>{{i.name}}</td>
+                    <td>{{i.course_type}}</td>
+                    <td>{{i.course}}</td>
+                    <td>{{i.email}}</td>
+                    <td>{{i.place}}</td>
+                    <td>{{i.remark}}</td>
+                    <td>{{i.phone_no}}</td>
+
+                    <td>
+                        <a onclick="delopenPopup({{ i.id }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                              <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                            </svg>
+                        <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </table>
+         </div>
+            {% endif %}
+
+
+
+    <!-- Popup container -->
+    <div id="callPopup" class="popup">
+        <div class="popup-content">
+            <!-- Include the content of call.html here -->
+            <div id="callForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+        <!-- Popup container -->
+    <div id="delcallPopup" class="delpopup">
+        <div class="delpopup-content">
+            <!-- Include the content of call.html here -->
+            <div id="delcallForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+            <script>
+
+                function openPopup(personId) {
+                    // Show the popup
+                    console.log(personId);
+                    $('#callPopup').show();
+
+                    // Fetch the call form dynamically
+                    $.ajax({
+                        url: `/call/${personId}`,
+                        success: function(data) {
+                            $('#callForm').html(data);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching form data:', error);
+                        }
+                    });
+                }
+
+
+
+
+                function delopenPopup(personId) {
+                    // Show the popup
+                    console.log(personId);
+                    $('#delcallPopup').show();
+
+                    // Fetch the call form dynamically
+                    $.ajax({
+                        url: `/delete/${personId}`,
+                        success: function(data) {
+                            $('#delcallForm').html(data);
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching form data:', error);
+                        }
+                    });
+                }
+
+
+
+
+            // Close the popup when clicking outside of it (optional)
+            window.onclick = function(event) {
+                var callPopup = document.getElementById('callPopup');
+                var delcallPopup = document.getElementById('delcallPopup');
+
+                console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+
+                if (event.target == callPopup) {
+                    closePopup(callPopup);
+                }
+
+                if (event.target == delcallPopup) {
+                    closePopup(delcallPopup);
+                }
+            }
+
+            function closePopup(popup) {
+                // Hide the popup by setting its display property to "none"
+                popup.style.display = 'none';
+                location.reload();
+            }
+
+
+
+        </script>
+    </body>
+</html>
 {% endblock %}

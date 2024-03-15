@@ -1,6 +1,271 @@
 {% extends 'base.html' %}
 {% block content %}
 {% load static %}
-<h1>need following</h1>
+<!DOCTYPE html>
+<html>
+<head>
+<style>
 
+
+
+       /* CSS for white text color */
+    .table-responsive table tr th,
+    .table-responsive table tr td {
+        color: LightGrey;
+    }
+
+    table, th, td {
+      border: 1px solid white;
+      border-collapse: collapse;
+      padding: 15px;
+
+    }
+          /* Popup container styles */
+          .popup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .popup-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+     /* Popup container styles */
+          .popup-followup {
+            display: none; /* Hide popup by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+            z-index: 9999; /* Ensure the popup appears on top of other content */
+          }
+
+          /* Popup content styles */
+          .popup-content-followup {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            max-width: 80%; /* Adjust the width as needed */
+            max-height: 80%; /* Adjust the height as needed */
+            overflow-y: auto; /* Enable vertical scrolling if content exceeds height */
+          }
+
+/* Style the first column */
+th:first-child, td:first-child {
+    position: sticky;
+    left: 0;
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+
+/* Fix the second column next to the first column */
+th:nth-child(2), td:nth-child(2) {
+    position: sticky;
+    left: 50px; /* Adjust this value based on the width of the first column */
+    background-color: #1b1c1c;
+    z-index: 1; /* Ensure it appears above other cells */
+}
+
+
+
+</style>
+</head>
+<body>
+
+<!-- Popup container -->
+<div id="callPopup" class="popup">
+  <div class="popup-content">
+    <!-- Content will be dynamically loaded here -->
+  </div>
+</div>
+
+
+<!-- Popup container -->
+    <div id="followcallPopup" class="popup-followup">
+        <div class="popup-content-followup">
+            <!-- Include the content of call.html here -->
+            <div id="followcallForm">
+                <!-- Form will be loaded here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    {% if data %}
+        <h4><u>NEED FOLLOWING TABLE</u>
+        <a href="{% url 'need_following_export_to_excel' %}">
+            <h4 style="color:red;" >download page
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
+                  <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
+                  <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
+                </svg>
+                <i class="bi bi-file-earmark-arrow-down"></i>
+            </h4>
+        </a>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered ">
+                <tr>
+                    <th>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                        </svg>
+                        <i class="bi bi-plus"></i>
+                    </th>
+                    <th>
+                        <p>
+                            <abbr title="Number of Followups">N/F</abbr>
+                        </p>
+                    </th>
+                    <th>ID</th>
+                    <th>
+                        <p>
+                            <abbr title="CONTROL NO">CNT NO</abbr>
+                        </p>
+                    </th>
+                    <th>LEAD NO</th>
+                    <th>LEAD DATE</th>
+                    <th>SOURCE</th>
+                    <th>NAME</th>
+                    <th>QUALIFICATION</th>
+                    <th>TYPE</th>
+                    <th>COURSE SELECTED</th>
+                    <th>PLACE</th>
+                    <th>LEAD REMARK</th>
+                    <th>PHONE</th>
+                    <th>EMAIL</th>
+
+                </tr>
+
+                {% for i in data %}
+                <tr>
+                    <td>
+                        <a onclick="followopenPopup({{ i.id }})">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-right-circle" viewBox="0 0 16 16">
+                              <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0M4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5z"/>
+                            </svg>
+                            <i class="bi bi-arrow-right-circle"></i>
+                        </a>
+                    </td>
+                    <td> <input type="button" value={{i.no_of_followups}} onclick="openPopup({{ i.id }})"> </td>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{i.lead.control_no}}</td>
+                    <td>{{i.lead.lead_no}}</td>
+                    <td>{{i.lead.lead_given_date}}</td>
+                    <td>{{i.lead.source}}</td>
+                    <td>{{i.lead.name}}</td>
+                    <td>{{i.lead.degree}}</td>
+                    <td>{{i.lead.course_type}}</td>
+                    <td>{{i.lead.course}}</td>
+                    <td>{{i.lead.place}}</td>
+                    <td>{{i.lead.remark}}</td>
+                    <td>{{i.lead.phone_no}}</td>
+                    <td>{{i.lead.email}}</td>
+
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    {% else %}
+            <br>
+            <br>
+            <p align="center" style="color:red;"> There is not any value show... </p>
+    {% endif %}
+
+
+
+
+<!-- JavaScript code to handle popup functionality -->
+<script>
+ function openPopup(personId) {
+    // Show the popup by setting its display property to "block"
+    document.getElementById('callPopup').style.display = 'block';
+
+    // Fetch details of the specific person using AJAX
+    fetch(`/followup_actions/${personId}`)
+        .then(response => response.text())
+        .then(data => {
+            // Populate the popup content with the fetched data
+            document.querySelector('.popup-content').innerHTML = data;
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+
+
+
+
+
+function followopenPopup(personId) {
+    // Show the popup
+    console.log(personId);
+
+    document.getElementById('followcallPopup').style.display = 'block';
+
+    // $('#followcallForm').show();
+
+    // Fetch the call form dynamically
+    $.ajax({
+        url: `/followup/${personId}/`,
+        success: function (data) {
+            $('#followcallForm').html(data);
+
+        },
+        error: function (xhr, status, error) {
+            console.error('Error fetching form data:', error);
+        }
+    });
+}
+
+
+
+
+
+// Close the popup when clicking outside of it (optional)
+window.onclick = function(event) {
+    var callPopup = document.getElementById('callPopup');
+    var followcallPopup = document.getElementById('followcallPopup');
+
+    console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+
+    if (event.target == callPopup) {
+        closePopup(callPopup);
+    }
+
+    if (event.target == followcallPopup) {
+        closePopup(followcallPopup);
+    }
+}
+
+function closePopup(popup) {
+    // Hide the popup by setting its display property to "none"
+    popup.style.display = 'none';
+    location.reload();
+}
+</script>
+
+</body>
+</html>
 {% endblock %}

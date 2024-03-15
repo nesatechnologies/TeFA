@@ -1,0 +1,66 @@
+<html>
+    <head>
+        <title>delete</title>
+    </head>
+    <body>
+        <form id="dynamicForm" method="post">
+          {% csrf_token %}
+            {% for i in data %}
+            <input type="hidden" name="personId" id="personId" value="{{i.id}}">
+            <p style="color:red;">Do you want to delete {{i.control_no}} ?</p>
+            {% endfor %}
+          <a href="{% url 'contactbook' %}">cancel</a>
+          <input type="submit">
+        </form>
+
+    <script>
+   // Attach event listener to form submission
+    $(document).on('submit', '#dynamicForm', function(event) {
+        console.log("Form submission event triggered");
+        // Prevent default form submission
+            event.preventDefault();
+
+            // Get the personId from the form or any other appropriate source
+            var personId = $('#personId').val();
+            console.log(personId);
+
+            // Call submitForm function to handle form submission
+            submitForm(personId);
+        });
+
+
+
+
+                // Function to handle form submission
+                function submitForm(personId) {
+                    console.log(personId);
+                    console.log("hia all");
+
+                    // Serialize form data
+                    var formData = $('#dynamicForm').serialize();
+                    console.log(formData)
+
+                    // Send POST request to save form data
+                    $.ajax({
+                        url: `/delete2/${personId}/`, // Use personId variable here
+                        method: 'POST',
+                        data: formData,
+                        success: function(response) {
+                            // Handle success response
+                            console.log('Form submitted successfully');
+                            // You can optionally close the popup or perform any other action here
+                            document.getElementById('callPopup').style.display = 'none';
+                            location.reload();
+                            // closePopup(); // Close the popup after form submission
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error response
+                            console.error('Error submitting form:', error);
+                            // Optionally display an error message to the user
+                        }
+                    });
+                }
+
+        </script>
+    </body>
+</html>
