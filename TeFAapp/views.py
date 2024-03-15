@@ -250,7 +250,6 @@ def call(request,id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
             course_types = request.POST.get('coursemode')
             if course_types == "Not mentioned":
@@ -273,7 +272,6 @@ def call(request,id):
             lead.phone_no = phone_no
             lead.email = email
             lead.place = place
-            lead.source = source
             lead.degree = degree
             lead.course_type =course_type
             lead.save()
@@ -306,7 +304,6 @@ def followup(request, id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
 
             course_types = request.POST.get('coursemode')
@@ -338,7 +335,6 @@ def followup(request, id):
             calldetails.lead.phone_no = phone_no
             calldetails.lead.email = email
             calldetails.lead.place = place
-            calldetails.lead.source = source
             calldetails.lead.degree = degree
             calldetails.lead.status = status
             calldetails.lead.save()
@@ -375,7 +371,6 @@ def followup2(request, id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
 
             course_types = request.POST.get('course_type')
@@ -405,7 +400,6 @@ def followup2(request, id):
             calldetails.lead.phone_no = phone_no
             calldetails.lead.email = email
             calldetails.lead.place = place
-            calldetails.lead.source = source
             calldetails.lead.degree = degree
             calldetails.lead.status = status
             calldetails.lead.course_type = course_type
@@ -1653,7 +1647,10 @@ def edit(request, id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
-            status = request.POST['status']
+            try:
+                status = request.POST['status']
+            except:
+                status = 0
 
 
             course_types = request.POST.get('coursemode')
