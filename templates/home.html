@@ -83,6 +83,14 @@ th:nth-child(2), td:nth-child(2) {
     background-color: #1b1c1c;
     z-index: 1; /* Ensure it appears above other cells */
 }
+.container1 {
+    border: 1px solid #1b1c1c; /* Add border to the form container */
+    padding: 5px; /* Add padding to give space between the border and form elements */
+    background-color: #1b1c1c;
+    margin-left: auto; /* Center the container horizontally */
+    margin-right: auto; /* Center the container horizontally */
+    width: 37%; /* Set the desired width of the container */
+    }
         </style>
     </head>
     <body>
@@ -303,6 +311,26 @@ th:nth-child(2), td:nth-child(2) {
             </table>
          </div>
             {% endif %}
+
+
+            <br>
+            <br>
+            <div class="container1">
+                <!-- Pagination buttons -->
+                <div class="pagination">
+                    {% if data.has_previous %}
+                        <a href="?page=1" style="color: #a2a4a4;">&emsp; &laquo; First</a>&emsp;
+                        <a href="?page={{ data.previous_page_number }}" style="color: #a2a4a4;">Previous</a>
+                    {% endif %}
+            
+                    <span class="current" style="color: #999a9a; margin-left: auto; margin-right: auto;">&emsp;<small> {{ data.number }} of {{ data.paginator.num_pages }}.</small>&emsp;</span>
+            
+                    {% if data.has_next %}
+                        <a href="?page={{ data.next_page_number }}" style="color: #a2a4a4;">Next</a>&emsp;
+                        <a href="?page={{ data.paginator.num_pages }}" style="color: #a2a4a4;">Last &raquo;</a>&emsp;
+                    {% endif %}
+                </div>
+            </div>
 
 
 

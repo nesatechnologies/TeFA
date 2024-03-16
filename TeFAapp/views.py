@@ -20,11 +20,25 @@ from openpyxl.styles import Alignment
 
 from django.template.loader import render_to_string
 
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 # Create your views here.
 @session_login_required
 def home(request):
     if 'username' in request.session:
-        data = Lead.objects.filter(status=0)
+        data = Lead.objects.filter(status=0).order_by('-id')
+        ## pagination part
+        paginator = Paginator(data, 50)  # Show 10 items per page
+        page = request.GET.get('page')
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            data = paginator.page(paginator.num_pages)
+            
         no_contact = Lead.objects.all().count()
         wait_call = Lead.objects.filter(status=0).count()
         conformed = Lead.objects.filter(status=1).count()
@@ -36,19 +50,54 @@ def home(request):
         return redirect('/')
 def conformed(request):
     if 'username' in request.session:
-        data = Calldetails.objects.filter(lead__status=1)
+        data = Calldetails.objects.filter(lead__status=1).order_by('-id')
+        ## pagination part
+        paginator = Paginator(data, 50)  # Show 10 items per page
+        page = request.GET.get('page')
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            data = paginator.page(paginator.num_pages)
         return render(request, 'conformed.html', {'data':data})
     else:
         return redirect('/')
 def need_following(request):
     if 'username' in request.session:
-        data = Calldetails.objects.filter(lead__status=2)
+        data = Calldetails.objects.filter(lead__status=2).order_by('-id')
+
+        ## pagination part
+        paginator = Paginator(data, 50)  # Show 10 items per page
+        page = request.GET.get('page')
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            data = paginator.page(paginator.num_pages)
+
         return render(request, 'need_following.html', {'data':data})
     else:
         return redirect('/')
 def denied(request):
     if 'username' in request.session:
-        data = Calldetails.objects.filter(lead__status=3)
+        data = Calldetails.objects.filter(lead__status=3).order_by('-id')
+        ## pagination part
+        paginator = Paginator(data, 50)  # Show 10 items per page
+        page = request.GET.get('page')
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            data = paginator.page(paginator.num_pages)
         return render(request, 'denied.html', {'data':data})
     else:
         return redirect('/')
@@ -250,7 +299,6 @@ def call(request,id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
             course_types = request.POST.get('coursemode')
             if course_types == "Not mentioned":
@@ -273,7 +321,6 @@ def call(request,id):
             lead.phone_no = phone_no
             lead.email = email
             lead.place = place
-            lead.source = source
             lead.degree = degree
             lead.course_type =course_type
             lead.save()
@@ -306,7 +353,6 @@ def followup(request, id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
 
             course_types = request.POST.get('coursemode')
@@ -338,7 +384,6 @@ def followup(request, id):
             calldetails.lead.phone_no = phone_no
             calldetails.lead.email = email
             calldetails.lead.place = place
-            calldetails.lead.source = source
             calldetails.lead.degree = degree
             calldetails.lead.status = status
             calldetails.lead.save()
@@ -375,7 +420,6 @@ def followup2(request, id):
             phone_no = request.POST['phone_no']
             email = request.POST['email']
             place = request.POST['place']
-            source = request.POST['source']
             degree = request.POST['degree']
 
             course_types = request.POST.get('course_type')
@@ -405,7 +449,6 @@ def followup2(request, id):
             calldetails.lead.phone_no = phone_no
             calldetails.lead.email = email
             calldetails.lead.place = place
-            calldetails.lead.source = source
             calldetails.lead.degree = degree
             calldetails.lead.status = status
             calldetails.lead.course_type = course_type
@@ -608,7 +651,18 @@ def upload_csv(request):
 
 def contactbook(request):
     if 'username' in request.session:
-        data = Lead.objects.all()
+        data = Lead.objects.all().order_by('-control_no')
+        ## pagination part
+        paginator = Paginator(data, 100)  # Show 10 items per page
+        page = request.GET.get('page')
+        try:
+            data = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            data = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range, deliver last page of results.
+            data = paginator.page(paginator.num_pages)
         return render(request,'contactbook.html',{'data':data})
     else:
         return redirect('/')
@@ -1653,7 +1707,10 @@ def edit(request, id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
-            status = request.POST['status']
+            try:
+                status = request.POST['status']
+            except:
+                status = 0
 
 
             course_types = request.POST.get('coursemode')
