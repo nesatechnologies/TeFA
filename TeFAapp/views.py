@@ -48,6 +48,19 @@ def home(request):
                                             'conformed':conformed, 'need_following':need_following, 'denied':denied})
     else:
         return redirect('/')
+def homeviewall(request):
+    if 'username' in request.session:
+        data = Lead.objects.filter(status=0).order_by('-id')
+            
+        no_contact = Lead.objects.all().count()
+        wait_call = Lead.objects.filter(status=0).count()
+        conformed = Lead.objects.filter(status=1).count()
+        need_following = Lead.objects.filter(status=2).count()
+        denied = Lead.objects.filter(status=3).count()
+        return render(request, 'home.html',{'data':data, 'wait_call':wait_call, 'no_contact':no_contact,
+                                            'conformed':conformed, 'need_following':need_following, 'denied':denied})
+    else:
+        return redirect('/')
 def conformed(request):
     if 'username' in request.session:
         data = Calldetails.objects.filter(lead__status=1).order_by('-id')
@@ -62,6 +75,12 @@ def conformed(request):
         except EmptyPage:
             # If page is out of range, deliver last page of results.
             data = paginator.page(paginator.num_pages)
+        return render(request, 'conformed.html', {'data':data})
+    else:
+        return redirect('/')
+def conformedviewall(request):
+    if 'username' in request.session:
+        data = Calldetails.objects.filter(lead__status=1).order_by('-id')
         return render(request, 'conformed.html', {'data':data})
     else:
         return redirect('/')
@@ -84,11 +103,17 @@ def need_following(request):
         return render(request, 'need_following.html', {'data':data})
     else:
         return redirect('/')
+def need_followingseeall(request):
+    if 'username' in request.session:
+        data = Calldetails.objects.filter(lead__status=2).order_by('-id')
+        return render(request, 'need_following.html', {'data':data})
+    else:
+        return redirect('/')
 def denied(request):
     if 'username' in request.session:
         data = Calldetails.objects.filter(lead__status=3).order_by('-id')
         ## pagination part
-        paginator = Paginator(data, 50)  # Show 10 items per page
+        paginator = Paginator(data, 2)  # Show 10 items per page
         page = request.GET.get('page')
         try:
             data = paginator.page(page)
@@ -98,6 +123,12 @@ def denied(request):
         except EmptyPage:
             # If page is out of range, deliver last page of results.
             data = paginator.page(paginator.num_pages)
+        return render(request, 'denied.html', {'data':data})
+    else:
+        return redirect('/')
+def deniedviewall(request):
+    if 'username' in request.session:
+        data = Calldetails.objects.filter(lead__status=3).order_by('-id')
         return render(request, 'denied.html', {'data':data})
     else:
         return redirect('/')
@@ -502,41 +533,51 @@ def upload_csv(request):
                         control_no = int(row[1])
                         print("1")
                         lead_no = str(row[4])
-                        print("1.1")
+                        print("2")
 
                         # Input date string
                         date_string = str(row[3])
-                        print("1.2")
+                        print("3")
                         print("***************")
                         print(date_string)
                         print("***************")
+
+
                         # Parse the date string into a datetime object
-                        date_object = datetime.strptime(date_string, "%d-%m-%Y")
-                        print(date_object)
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        for date_format in formats_to_check:
+                            try:
+                                # Attempt to parse the date string using the current format
+                                date_object = datetime.strptime(date_string, date_format)
+                            except ValueError:
+                                # If parsing fails, continue to the next format
+                                continue
+                    
+
                         # Format the datetime object in the desired format
                         formatted_date = date_object.strftime("%Y-%m-%d")
                         print(formatted_date)
                         lead_given_date = formatted_date
                         print(lead_given_date)
-                        print("1.2.1")
+                        print("4")
 
                         source = str(row[12])
                         name = str(row[5])
-                        print("1.3")
+                        print("5")
                         phone_no = int(row[8])
                         email = (row[9])
-                        print("1.4")
+                        print("6")
                         place = str(row[10])
                         degree = str(row[13])
                         course_type = str(row[6])
                         course = str(row[7])
                         remark = str(row[11])
-                        print("1.5")
+                        print("7")
                         data = Lead(lead_given_date=lead_given_date, name=name, course=course, phone_no=phone_no, email=email,
                                     place=place, remark=remark, control_no=control_no, lead_no=lead_no, source=source,
                                     degree=degree, course_type=course_type)
                         data.save()
-                        print("2")
+                        print("8")
 
                         ##### initial call part
                         initial_call = str(row[19])
@@ -552,17 +593,28 @@ def upload_csv(request):
                         print("*******date string********")
                         # Input date string
                         date_string2 = str(row[17])
-                        print("1.2")
+                        print("9")
                         print("***************")
                         print(date_string2)
                         print("***************")
+                        
+                        print("10")
                         # Parse the date string into a datetime object
-                        date_object2 = datetime.strptime(date_string2, "%d-%m-%Y")
-                        print(date_object2)
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        for date_format in formats_to_check:
+                            try:
+                                # Attempt to parse the date string using the current format
+                                date_object2 = datetime.strptime(date_string2, date_format)
+                            except ValueError:
+                                # If parsing fails, continue to the next format
+                                continue
+                            
+
                         # Format the datetime object in the desired format
                         formatted_date2 = date_object2.strftime("%Y-%m-%d")
                         print(formatted_date2)
                         initial_call_date = formatted_date2
+                        print("11")
 
 
                         initial_call_remark= str(row[16])
@@ -590,6 +642,7 @@ def upload_csv(request):
                         print(new_data)
                         sublist = []
                         for i, item in enumerate(new_data):
+                            print(item)
                             # Skip every fourth position containing an empty string
                             if (i + 1) % 4 == 0 and item == "":
                                 continue
@@ -622,12 +675,21 @@ def upload_csv(request):
                                         print("3")
                                         print(sublist[1])
                                         print(type(sublist[1]))
+
                                         # Parse the date string into a datetime object
-                                        date_object = datetime.strptime(sublist[1], "%d-%m-%Y")
-                                        # Format the datetime object in the desired format
-                                        formatted_date = date_object.strftime("%Y-%m-%d")
-                                        called_datetime = formatted_date
+                                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                                        for date_format in formats_to_check:
+                                            try:
+                                                # Attempt to parse the date string using the current format
+                                                date_object3 = datetime.strptime(sublist[1], date_format)
+                                            except ValueError:
+                                                # If parsing fails, continue to the next format
+                                                continue
+                                    
                                         print("4")
+                                        formatted_date = date_object3.strftime("%Y-%m-%d")
+                                        called_datetime = formatted_date
+                                        print("5")
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
                                                         called_datetime=called_datetime, called_meadium=called_meadium,
                                                         calls_updated=calls_updated)
@@ -666,7 +728,14 @@ def contactbook(request):
         return render(request,'contactbook.html',{'data':data})
     else:
         return redirect('/')
-
+    
+def contactbookviewall(request):
+    if 'username' in request.session:
+        data = Lead.objects.all().order_by('-control_no')
+        return render(request,'contactbook.html',{'data':data})
+    else:
+        return redirect('/')
+    
 def searchresult(request):
     if 'username' in request.session:
         try:
@@ -787,6 +856,269 @@ def export_to_excel(request):
         return response
     else:
         return redirect('/')
+    
+
+def contactbook_detail_Report_export_to_excel(request):
+    if 'username' in request.session:
+        k = 0
+
+        calldetails_data = Calldetails.objects.all()
+
+        # Create a new workbook
+        wb = Workbook()
+
+        # Activate the first sheet
+        ws = wb.active
+        ws.title = "Need following Data"
+
+        # def get_folloup_headers(calldetail):
+        #     """
+        #     Generates follow-up headers based on the number of follow-up entries for a calldetail.
+        #     """
+        #     folloup_count = calldetail.folloup_set.all().count()
+        #     headers = []
+        #     for _ in range(folloup_count):
+        #         headers.extend(["", "Folloup Remark", "Folloup Updated", "Made By"])
+        #     return headers
+
+
+        def get_folloup_headers():
+            #### print no of followup tables in ptint doc based on status
+            largenofollow = 0
+            for g in calldetails_data:
+                nofollow = g.no_of_followups
+                if largenofollow < nofollow:
+                    largenofollow = nofollow
+            highest_followups = largenofollow
+            highest_followups = highest_followups
+            highest_followups -= 1
+            # folloup_count = calldetail.folloup_set.all().count()
+            headers = []
+            if highest_followups > 0:  # Add check to avoid empty headers if no follow-ups
+                for i in range(highest_followups):
+                    headers.extend(["", f"Follow-Up-{i+1}", "Date", "Remark"])
+            return headers
+
+        # Define base headers
+        base_headers = [
+            "SL.NO",
+            "Control No",
+            "Date Added",
+            "Lead Given Date",
+            "Lead No",
+            "Name",
+            "course type",
+            "Course",
+            "Phone No",
+            "Email",
+            "Place",
+            "Lead Remark",
+            "Lead Source",
+            "Qualification",
+            "status",
+            "",
+            "Initial Employee Remark",
+            "Initial Called Date",
+            "Source",
+            "Initial Call Made",
+        ]
+        yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
+
+        # Define white fill pattern
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
+
+        # Combine base headers and dynamically generated follow-up headers
+        # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
+        headers = base_headers + sum([get_folloup_headers()], [])
+
+        # Define font style for bold
+        bold_font = Font(bold=True)
+        
+
+        # Write headers to the first row with appropriate fill applied
+        for col_idx, header in enumerate(headers, start=1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.value = header
+
+            if cell.value:  # Check if cell value is not empty
+                if col_idx <= len(base_headers):  # Apply red fill to base headers
+                    cell.fill = yellow_fill
+                else:  # Apply white fill to follow-up headers
+                    cell.fill = green_fill
+
+            # Apply bold font to each header cell
+            cell.font = bold_font
+
+        # Write headers to the first row only
+        # Increase the height of the first row
+        ws.row_dimensions[1].height = 30  # Adjust height as needed
+
+        # # Remove color from empty cells
+        # for row in ws.iter_rows():
+        #     for cell in row:
+        #         if cell.value is None:
+        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+
+        # ws.append(headers)
+        # Set column width for each column
+
+
+        for calldetail in calldetails_data:
+            # Initialize empty lists to store folloup details
+            folloup_remarks = []
+            folloup_updated = []
+            call_made_by = []
+
+            # Retrieve related Folloup data
+            folloup_data = Folloup.objects.filter(calldetails=calldetail)
+
+            # Extract folloup details into separate lists
+            for folloup in folloup_data:
+                folloup_remarks.append(folloup.remark)
+                folloup_updated.append(folloup.called_datetime.strftime("%d-%m-%Y"))  # Format date/time
+                call_made_by.append(folloup.calls_made.name)  # Assuming 'name' is the relevant field
+
+
+            statusval = ""
+            if calldetail.lead.status == 0:
+                statusval = "wait for call"
+            elif calldetail.lead.status == 1:
+                statusval = "conformed"
+            elif calldetail.lead.status == 2:
+                statusval = "need following"
+            elif calldetail.lead.status == 3:
+                statusval = "denied"
+
+            # Extract Calldetails data
+            row = []  # Create an empty row
+
+            # Add lead details
+            k = k + 1
+            row.extend([
+                k,
+                calldetail.lead.control_no,
+                calldetail.lead.date_time_added.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_given_date.strftime("%d-%m-%Y"),
+                calldetail.lead.lead_no,
+                calldetail.lead.name,
+                calldetail.lead.course_type,
+                calldetail.lead.course,
+                calldetail.lead.phone_no,
+                calldetail.lead.email,
+                calldetail.lead.place,
+                calldetail.lead.remark,
+                calldetail.lead.source,
+                calldetail.lead.degree,
+                statusval,
+
+                "",
+                calldetail.emp_remark,
+                calldetail.called_datetime.strftime("%d-%m-%Y"),
+                calldetail.called_meadium,
+                calldetail.calls_made.user_name,
+            ])
+
+            # Add folloup details with corresponding headings and empty columns
+            for remark, updated, made_by in zip(folloup_remarks, folloup_updated, call_made_by):
+                row.append("") # Add an empty column between each set of follow-up details
+                row.append(made_by)
+                row.append(updated)
+                row.append(remark)
+
+
+            # Write the combined row to the worksheet
+            ws.append(row)
+
+
+        ##### increase cell width ####
+        for col in ws.columns:
+            max_length = 0
+            column = col[0].column  # Get the column index
+            for cell in col:
+                try:
+                    if len(str(cell.value)) > max_length:
+                        max_length = len(cell.value)
+                except:
+                    pass
+            adjusted_width = (max_length + 2) * 1.2  # Adjust the multiplication factor as needed
+            ws.column_dimensions[get_column_letter(column)].width = adjusted_width
+
+
+
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Phone No") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Define grape colour fill pattern
+        grape_fill = PatternFill(start_color='ffccff', end_color='ffccff', fill_type='solid')  # grape fill
+
+        # Get the index of the "Phone No" column
+        phone_no_column_index = headers.index("Initial Call Made") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=phone_no_column_index, max_col=phone_no_column_index):
+            for cell in row:
+                cell.fill = grape_fill  # Apply red fill color to each cell
+
+        
+        # Iterate through each cell in the worksheet and set text alignment to center
+        for row in ws.iter_rows():
+            for cell in row:
+                alignment = Alignment(horizontal='center', vertical='center')  # Center alignment
+                cell.alignment = alignment
+
+        # Define font style for Calibri
+        calibri_font = Font(name='Calibri')
+        # Iterate through each cell in the worksheet and set text to calibri_font
+        for row in ws.iter_rows():
+            for cell in row:
+                # Apply Calibri font to each header cell
+                cell.font = calibri_font
+
+        # Define red fill pattern
+        red_fill = PatternFill(start_color='ffcccc', end_color='ffcccc', fill_type='solid')  # Red fill
+        green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
+        blue_fill = PatternFill(start_color='60cbf3', end_color='60cbf3', fill_type='solid')  # blue fill
+        dark_fill = PatternFill(start_color='DCDCDC', end_color='DCDCDC', fill_type='solid')  # dark fill
+
+        # Get the index of the "Phone No" column
+        status_no_column_index = headers.index("status") + 1  # Adding 1 because index starts from 1 in openpyxl
+
+        # Iterate through each cell in the "Phone No" column
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row, min_col=status_no_column_index, max_col=status_no_column_index):
+            for cell in row:
+                if cell.value == "wait for call":
+                    cell.fill = blue_fill  # Apply blue fill color to each cell
+                if cell.value == "conformed":
+                    cell.fill = green_fill  # Apply green fill color to each cell
+                if cell.value == "need following":
+                    cell.fill = dark_fill  # Apply dark fill color to each cell
+                if cell.value == "denied":
+                    cell.fill = red_fill  # Apply red fill color to each cell
+
+
+        # Create a response object
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=Detail_Report.xlsx'
+
+        # Save the workbook to the response
+        wb.save(response)
+        return response
+    else:
+        return redirect('/')
+
+
+
+
 
 def need_following_export_to_excel(request):
     if 'username' in request.session:
@@ -848,7 +1180,7 @@ def need_following_export_to_excel(request):
             "status",
             "",
             "Initial Employee Remark",
-            "Initial Called Datetime",
+            "Initial Called Date",
             "Source",
             "Initial Call Made",
         ]
@@ -1075,7 +1407,7 @@ def conformed_export_to_excel(request):
             "status",
             "",
             "Initial Employee Remark",
-            "Initial Called Datetime",
+            "Initial Called Date",
             "Source",
             "Initial Call Made",
         ]
@@ -1300,7 +1632,7 @@ def denied_export_to_excel(request):
             "status",
             "",
             "Initial Employee Remark",
-            "Initial Called Datetime",
+            "Initial Called Date",
             "Source",
             "Initial Call Made",
         ]
@@ -1522,7 +1854,7 @@ def single_person_export_to_excel(request, id):
             "status",
             "",
             "Initial Employee Remark",
-            "Initial Called Datetime",
+            "Initial Called Date",
             "Source",
             "Initial Call Made",
         ]

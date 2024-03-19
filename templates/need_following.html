@@ -98,6 +98,9 @@ th:nth-child(2), td:nth-child(2) {
     margin-right: auto; /* Center the container horizontally */
     width: 37%; /* Set the desired width of the container */
     }
+.inline-block {
+        display: inline-block;
+    }
 
 </style>
 </head>
@@ -124,7 +127,7 @@ th:nth-child(2), td:nth-child(2) {
     {% if data %}
         <h4><u>NEED FOLLOWING TABLE</u>
         <a href="{% url 'need_following_export_to_excel' %}">
-            <h4 style="color:red;" >download page
+            <h4 style="color:red;" > <small> download page </small>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                   <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z"/>
                   <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z"/>
@@ -132,8 +135,27 @@ th:nth-child(2), td:nth-child(2) {
                 <i class="bi bi-file-earmark-arrow-down"></i>
             </h4>
         </a>
+        <br>
+
+        <!-- Modify the onchange attribute of the select element -->
+        <small class="inline-block">
+            <select id="sortOptions" onchange="sortTable()" style="background-color: #1b1c1c; color: rgb(195, 196, 196);">
+                <option value="lastInFirst">Last in First</option>
+                <option value="firstInFirst">First in First</option>
+            </select>
+        </small>&emsp;
+
+        <small class="inline-block"><a href="{% url 'need_followingseeall' %}"><button id="seeAllBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: block;">See All</button></a></small>
+
+        <small class="inline-block"><a href="{% url 'need_following' %}"><button id="viewLessBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: none;">View Less</button></a></small>
+        
+        <br>
+        <br>
+
+
+    
         <div class="table-responsive">
-            <table class="table table-striped table-bordered ">
+            <table id="dataTable" class="table table-striped table-bordered ">
                 <tr>
                     <th>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
@@ -145,24 +167,76 @@ th:nth-child(2), td:nth-child(2) {
                         <p>
                             <abbr title="Number of Followups">N/F</abbr>
                         </p>
+                        <!-- Filter input field for Number of Followups -->
+                        <input type="text" style="width: 50px;" id="filterNoOfFollowups" onkeyup="filterTable1('filterNoOfFollowups', 1)" placeholder="Filter by N/F">
                     </th>
-                    <th>ID</th>
+                    <th>
+                        <p>ID</p>
+                        <!-- Filter input field for ID -->
+                        <input type="text" style="width: 50px;" id="filterId" onkeyup="filterTable('filterId', 2)" placeholder="Filter by ID">
+                    </th>
                     <th>
                         <p>
                             <abbr title="CONTROL NO">CNT NO</abbr>
                         </p>
+                        <!-- Filter input field for Control Number -->
+                        <input type="text" style="width: 50px;" id="filterControlNo" onkeyup="filterTable('filterControlNo', 3)" placeholder="Filter by CNT NO">
                     </th>
-                    <th>LEAD NO</th>
-                    <th>LEAD DATE</th>
-                    <th>SOURCE</th>
-                    <th>NAME</th>
-                    <th>QUALIFICATION</th>
-                    <th>TYPE</th>
-                    <th>COURSE SELECTED</th>
-                    <th>PLACE</th>
-                    <th>LEAD REMARK</th>
-                    <th>PHONE</th>
-                    <th>EMAIL</th>
+                    <th>
+                        <p>LEAD NO</p>
+                        <!-- Filter input field for LEAD NO -->
+                        <input type="text" style="width: 125px;" id="leadno" onkeyup="filterTable('leadno', 4)" placeholder="Filter by LEAD NO">
+                    </th>
+                    <th>
+                        <p>LEAD DATE</p>
+                        <!-- Filter input field for LEAD DATE -->
+                        <input type="text" style="width: 125px;" id="leaddate" onkeyup="filterTable('leaddate', 5)" placeholder="Filter by LEAD DATE">
+                    </th>
+                    <th>
+                        <p>SOURCE</p>
+                        <!-- Filter input field for SOURCE -->
+                        <input type="text" style="width: 125px;" id="source" onkeyup="filterTable('source', 6)" placeholder="Filter by SOURCE">
+                    </th>
+                    <th>
+                        <p>NAME</p>
+                        <!-- Filter input field for NAME -->
+                        <input type="text" id="name" onkeyup="filterTable('name', 7)" placeholder="Filter by NAME">
+                    </th>
+                    <th>
+                        <p>QUALIFICATION</p>
+                        <!-- Filter input field for QUALIFICATION -->
+                        <input type="text" id="quali" onkeyup="filterTable('quali', 8)" placeholder="Filter by QUALIFICATION">
+                    </th>
+                    <th>
+                        <p>TYPE</p>
+                        <!-- Filter input field for TYPE -->
+                        <input type="text" id="type" onkeyup="filterTable('type', 9)" placeholder="Filter by TYPE">
+                    </th>
+                    <th>
+                        <p>COURSE SELECTED</p>
+                        <!-- Filter input field for COURSE SELECTED -->
+                        <input type="text" id="course" onkeyup="filterTable('course', 10)" placeholder="Filter by COURSE SELECTED">
+                    </th>
+                    <th>
+                        <p>PLACE</p>
+                        <!-- Filter input field for PLACE -->
+                        <input type="text" id="place" onkeyup="filterTable('place', 11)" placeholder="Filter by PLACE">
+                    </th>
+                    <th>
+                        <p>LEAD REMARK</p>
+                        <!-- Filter input field for LEAD REMARK -->
+                        <input type="text" id="remark" onkeyup="filterTable('remark', 12)" placeholder="Filter by LEAD REMARK">
+                    </th>
+                    <th>
+                        <p>PHONE</p>
+                        <!-- Filter input field for PHONE -->
+                        <input type="text" id="ph" onkeyup="filterTable('ph', 13)" placeholder="Filter by PHONE">
+                    </th>
+                    <th>
+                        <p>EMAIL</p>
+                        <!-- Filter input field for EMAIL -->
+                        <input type="text" id="email" onkeyup="filterTable('email', 14)" placeholder="Filter by EMAIL">
+                    </th>
 
                 </tr>
 
@@ -195,6 +269,26 @@ th:nth-child(2), td:nth-child(2) {
                 {% endfor %}
             </table>
         </div>
+
+        <br>
+        <br>
+        <div class="container1">
+            <!-- Pagination buttons -->
+            <div class="pagination">
+                {% if data.has_previous %}
+                    <a href="?page=1" style="color: #a2a4a4;">&emsp; &laquo; First</a>&emsp;
+                    <a href="?page={{ data.previous_page_number }}" style="color: #a2a4a4;">Previous</a>
+                {% endif %}
+
+                <span class="current" style="color: #999a9a; margin-left: auto; margin-right: auto;">&emsp;<small> {{ data.number }} of {{ data.paginator.num_pages }}.</small>&emsp;</span>
+
+                {% if data.has_next %}
+                    <a href="?page={{ data.next_page_number }}" style="color: #a2a4a4;">Next</a>&emsp;
+                    <a href="?page={{ data.paginator.num_pages }}" style="color: #a2a4a4;">Last &raquo;</a>&emsp;
+                {% endif %}
+            </div>
+        </div>
+
     {% else %}
             <br>
             <br>
@@ -203,29 +297,125 @@ th:nth-child(2), td:nth-child(2) {
 
 
 
-<br>
-<br>
-<div class="container1">
-    <!-- Pagination buttons -->
-    <div class="pagination">
-        {% if data.has_previous %}
-            <a href="?page=1" style="color: #a2a4a4;">&emsp; &laquo; First</a>&emsp;
-            <a href="?page={{ data.previous_page_number }}" style="color: #a2a4a4;">Previous</a>
-        {% endif %}
-
-        <span class="current" style="color: #999a9a; margin-left: auto; margin-right: auto;">&emsp;<small> {{ data.number }} of {{ data.paginator.num_pages }}.</small>&emsp;</span>
-
-        {% if data.has_next %}
-            <a href="?page={{ data.next_page_number }}" style="color: #a2a4a4;">Next</a>&emsp;
-            <a href="?page={{ data.paginator.num_pages }}" style="color: #a2a4a4;">Last &raquo;</a>&emsp;
-        {% endif %}
-    </div>
-</div>
-
-
-
 <!-- JavaScript code to handle popup functionality -->
 <script>
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the current URL
+    var currentURL = window.location.href;
+
+    // Split the URL by '/' characters and get the last element
+    var urlParts = currentURL.split('/');
+    var lastPart = urlParts[urlParts.length - 2]; // Assuming there's a trailing '/' in the URL
+
+    // Get the button elements
+    var seeAllBtn = document.getElementById("seeAllBtn");
+    var viewLessBtn = document.getElementById("viewLessBtn");
+
+    console.log(seeAllBtn);
+    console.log(viewLessBtn);
+
+    // Check if the last part matches "need_followingseeall/"
+    if (lastPart.trim() === "need_followingseeall") {
+        // Hide the "See All" button and show the "View Less" button
+        seeAllBtn.style.display = "none";
+        viewLessBtn.style.display = "block";
+
+        // Hide the pagination
+        var paginationDiv = document.querySelector(".container1");
+        if (paginationDiv) {
+            paginationDiv.style.display = "none";
+        }
+
+    } else {
+        // Hide the "View Less" button and show the "See All" button
+        seeAllBtn.style.display = "block";
+        viewLessBtn.style.display = "none";
+
+        
+    }
+});
+
+
+function sortTable() {
+    var table = document.getElementById("dataTable");
+    var rows = Array.from(table.rows); // Convert the HTMLCollection to an array
+    var sortOption = document.getElementById("sortOptions").value;
+
+    // Remove the header row from the array
+    rows.shift();
+
+    // Sorting logic based on selected option
+    if (sortOption === "firstInFirst") {
+        rows.reverse(); // Reverse the order for "First in First"
+    } else if (sortOption === "lastInFirst") {
+        // Sorting function for "Last in First"
+        rows.sort(function(a, b) {
+            return b.rowIndex - a.rowIndex;
+        });
+    }
+
+    // Reattach the rows to the table
+    rows.forEach(function(row) {
+        table.appendChild(row);
+    });
+}
+
+
+function filterTable1(inputId, columnIndex) {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById(inputId);
+    filter = input.value.toUpperCase();
+    table = document.querySelector('.table-striped');
+    tr = table.getElementsByTagName("tr");
+    
+
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[columnIndex];
+        if (td) {
+            // Retrieve the input element within the table cell
+            var inputElement = td.querySelector('input[type="button"]');
+
+            // Get the text value of the input element
+            txtValue = inputElement.value;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+
+
+function filterTable(inputId, columnIndex) {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById(inputId);
+    filter = input.value.toUpperCase();
+    table = document.querySelector('.table-striped');
+    tr = table.getElementsByTagName("tr");
+    
+
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[columnIndex];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
  function openPopup(personId) {
     // Show the popup by setting its display property to "block"
     document.getElementById('callPopup').style.display = 'block';
