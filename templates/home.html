@@ -91,6 +91,10 @@ th:nth-child(2), td:nth-child(2) {
     margin-right: auto; /* Center the container horizontally */
     width: 37%; /* Set the desired width of the container */
     }
+
+    .inline-block {
+        display: inline-block;
+    }
         </style>
     </head>
     <body>
@@ -242,26 +246,92 @@ th:nth-child(2), td:nth-child(2) {
 
             {% if data %}
             <h4><u id="calltable">WAIT FOR CALL</u></h4>
+
+
+            <!-- Modify the onchange attribute of the select element -->
+            <small class="inline-block">
+              <select id="sortOptions" onchange="sortTable()" style="background-color: #1b1c1c; color: rgb(195, 196, 196);">
+                  <option value="lastInFirst">Last in First</option>
+                  <option value="firstInFirst">First in First</option>
+              </select>
+          </small>&emsp;
+
+          <small class="inline-block"><a href="{% url 'homeviewall' %}"><button id="seeAllBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: block;">See All</button></a></small>
+
+          <small class="inline-block"><a href="{% url 'home' %}"><button id="viewLessBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: none;">View Less</button></a></small>
+          
+          <br>
+          <br>
+
+
          <div class="table-responsive">
-            <table class="table table-striped table-bordered ">
+            <table id="dataTable" class="table table-striped table-bordered ">
                 <tr>
                   <th class="text-center">
                     <p>
                         <abbr title="Make Initial Call">ini call</abbr>
                     </p>
                   </th>
-                    <th>ID</th>
-                    <th>CONTROL NO</th>
-                    <th>LEAD NO</th>
-                    <th>LEAD DATE</th>
-                    <th>ADDED DATE</th>
-                    <th>NAME</th>
-                    <th>TYPE</th>
-                    <th>COURSE</th>
-                    <th>EMAIL</th>
-                    <th>PLACE</th>
-                    <th>REMARK</th>
-                    <th>PHONE</th>
+                    <th>
+                      <p>ID</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="filterId" onkeyup="filterTable('filterId', 1)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>CONTROL NO</p>
+                      <!-- Filter input field for CONTROL NO -->
+                      <input type="text" style="width: 50px;" id="ctrlno" onkeyup="filterTable('ctrlno', 2)" placeholder="Filter by CONTROL NO">
+                    </th>
+                    <th>
+                      <p>LEAD NO</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="leadno" onkeyup="filterTable('leadno', 3)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>LEAD DATE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="leaddate" onkeyup="filterTable('leaddate', 4)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>ADDED DATE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="addeddate" onkeyup="filterTable('addeddate', 5)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>NAME</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="name" onkeyup="filterTable('name', 6)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>TYPE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="type" onkeyup="filterTable('type', 7)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>COURSE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="course" onkeyup="filterTable('course', 8)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>EMAIL</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="email" onkeyup="filterTable('email', 9)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>PLACE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="place" onkeyup="filterTable('place', 10)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>REMARK</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="remark" onkeyup="filterTable('remark', 11)" placeholder="Filter by ID">
+                    </th>
+                    <th>
+                      <p>PHONE</p>
+                      <!-- Filter input field for ID -->
+                      <input type="text" style="width: 50px;" id="phone" onkeyup="filterTable('phone', 12)" placeholder="Filter by ID">
+                    </th>
                     <th class="text-center">
                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                           <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -310,27 +380,31 @@ th:nth-child(2), td:nth-child(2) {
                 {% endfor %}
             </table>
          </div>
+
+
+         <br>
+         <br>
+         <div class="container1">
+             <!-- Pagination buttons -->
+             <div class="pagination">
+                 {% if data.has_previous %}
+                     <a href="?page=1" style="color: #a2a4a4;">&emsp; &laquo; First</a>&emsp;
+                     <a href="?page={{ data.previous_page_number }}" style="color: #a2a4a4;">Previous</a>
+                 {% endif %}
+         
+                 <span class="current" style="color: #999a9a; margin-left: auto; margin-right: auto;">&emsp;<small> {{ data.number }} of {{ data.paginator.num_pages }}.</small>&emsp;</span>
+         
+                 {% if data.has_next %}
+                     <a href="?page={{ data.next_page_number }}" style="color: #a2a4a4;">Next</a>&emsp;
+                     <a href="?page={{ data.paginator.num_pages }}" style="color: #a2a4a4;">Last &raquo;</a>&emsp;
+                 {% endif %}
+             </div>
+         </div>
+
+
             {% endif %}
 
 
-            <br>
-            <br>
-            <div class="container1">
-                <!-- Pagination buttons -->
-                <div class="pagination">
-                    {% if data.has_previous %}
-                        <a href="?page=1" style="color: #a2a4a4;">&emsp; &laquo; First</a>&emsp;
-                        <a href="?page={{ data.previous_page_number }}" style="color: #a2a4a4;">Previous</a>
-                    {% endif %}
-            
-                    <span class="current" style="color: #999a9a; margin-left: auto; margin-right: auto;">&emsp;<small> {{ data.number }} of {{ data.paginator.num_pages }}.</small>&emsp;</span>
-            
-                    {% if data.has_next %}
-                        <a href="?page={{ data.next_page_number }}" style="color: #a2a4a4;">Next</a>&emsp;
-                        <a href="?page={{ data.paginator.num_pages }}" style="color: #a2a4a4;">Last &raquo;</a>&emsp;
-                    {% endif %}
-                </div>
-            </div>
 
 
 
@@ -355,6 +429,100 @@ th:nth-child(2), td:nth-child(2) {
     </div>
 
             <script>
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Get the current URL
+    var currentURL = window.location.href;
+
+    // Split the URL by '/' characters and get the last element
+    var urlParts = currentURL.split('/');
+    var lastPart = urlParts[urlParts.length - 2]; // Assuming there's a trailing '/' in the URL
+
+    // Get the button elements
+    var seeAllBtn = document.getElementById("seeAllBtn");
+    var viewLessBtn = document.getElementById("viewLessBtn");
+
+    console.log(seeAllBtn);
+    console.log(viewLessBtn);
+
+    // Check if the last part matches "need_followingseeall/"
+    if (lastPart.trim() === "homeviewall") {
+        // Hide the "See All" button and show the "View Less" button
+        seeAllBtn.style.display = "none";
+        viewLessBtn.style.display = "block";
+
+        // Hide the pagination
+        var paginationDiv = document.querySelector(".container1");
+        if (paginationDiv) {
+            paginationDiv.style.display = "none";
+        }
+
+    } else {
+        // Hide the "View Less" button and show the "See All" button
+        seeAllBtn.style.display = "block";
+        viewLessBtn.style.display = "none";
+
+        
+    }
+});
+
+
+function sortTable() {
+    var table = document.getElementById("dataTable");
+    var rows = Array.from(table.rows); // Convert the HTMLCollection to an array
+    var sortOption = document.getElementById("sortOptions").value;
+
+    // Remove the header row from the array
+    rows.shift();
+
+    // Sorting logic based on selected option
+    if (sortOption === "firstInFirst") {
+        rows.reverse(); // Reverse the order for "First in First"
+    } else if (sortOption === "lastInFirst") {
+        // Sorting function for "Last in First"
+        rows.sort(function(a, b) {
+            return b.rowIndex - a.rowIndex;
+        });
+    }
+
+    // Reattach the rows to the table
+    rows.forEach(function(row) {
+        table.appendChild(row);
+    });
+}
+
+
+function filterTable(inputId, columnIndex) {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById(inputId);
+    filter = input.value.toUpperCase();
+    table = document.querySelector('.table-striped');
+    tr = table.getElementsByTagName("tr");
+    
+
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[columnIndex];
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
                 function openPopup(personId) {
                     // Show the popup
