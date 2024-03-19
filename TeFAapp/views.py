@@ -578,6 +578,9 @@ def upload_csv(request):
                                     degree=degree, course_type=course_type)
                         data.save()
                         print("8")
+                        rowstat = str(row[14])
+                        if rowstat == "wait for call":
+                            continue
 
                         ##### initial call part
                         initial_call = str(row[19])
@@ -953,14 +956,19 @@ def contactbook_detail_Report_export_to_excel(request):
         # Increase the height of the first row
         ws.row_dimensions[1].height = 30  # Adjust height as needed
 
-        # # Remove color from empty cells
-        # for row in ws.iter_rows():
-        #     for cell in row:
-        #         if cell.value is None:
-        #             cell.fill = PatternFill(start_color='FFFFFF', end_color='FFFFFF', fill_type='solid')  # White fill
+      
 
-        # ws.append(headers)
-        # Set column width for each column
+        ##### add lead (wait for call details to document)
+        waitforcalls = Lead.objects.filter(status=0)
+         # Write data rows
+        for waitforcall in waitforcalls:
+            statusval = ""
+            if waitforcall.status == 0:
+                statusval = "wait for call"
+                k = k + 1
+
+            row = [k, waitforcall.control_no, waitforcall.date_time_added.strftime("%d-%m-%Y"), waitforcall.lead_given_date.strftime("%d-%m-%Y"), waitforcall.lead_no, waitforcall.name, waitforcall.course_type, waitforcall.course, waitforcall.phone_no, waitforcall.email, waitforcall.place, waitforcall.remark, waitforcall.source, waitforcall.degree, statusval]
+            ws.append(row)
 
 
         for calldetail in calldetails_data:
