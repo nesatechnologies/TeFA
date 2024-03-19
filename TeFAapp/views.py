@@ -21,6 +21,8 @@ from openpyxl.styles import Alignment
 from django.template.loader import render_to_string
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import pandas as pd
+import io
 
 # Create your views here.
 @session_login_required
@@ -516,14 +518,19 @@ def followup_actions(request,id):
 def upload_csv(request):
     message = ""  # Default message
     csv_data = None  # Default CSV data
-    if request.method == 'POST' and request.FILES.get('csv_file'):
-        csv_file = request.FILES['csv_file']
-        if csv_file.name.endswith('.csv'):
+    if request.method == 'POST' and request.FILES.get('xlsx_file'):
+        doc_files = request.FILES['xlsx_file']
+
+        if doc_files.name.endswith('.xlsx'):
+            df = pd.read_excel(doc_files)
+            csv_file = df.to_csv(index=False)
+        # elif doc_files.name.endswith('.csv'):
+        #     csv_file = doc_files
             # Process the uploaded CSV file
             try:
                 # Decode and process the CSV file
-                decoded_file = csv_file.read().decode('utf-8')
-                csv_data = csv.reader(decoded_file.splitlines())
+                csv_data = io.StringIO(csv_file)
+                csv_data = csv.reader(csv_data)
                 for row in csv_data:
                     # Process each row of the CSV file
                     if row[0] == 'SL.NO':
@@ -544,7 +551,7 @@ def upload_csv(request):
 
 
                         # Parse the date string into a datetime object
-                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
@@ -603,7 +610,7 @@ def upload_csv(request):
                         
                         print("10")
                         # Parse the date string into a datetime object
-                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
@@ -680,7 +687,7 @@ def upload_csv(request):
                                         print(type(sublist[1]))
 
                                         # Parse the date string into a datetime object
-                                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                                         for date_format in formats_to_check:
                                             try:
                                                 # Attempt to parse the date string using the current format

@@ -286,59 +286,61 @@ th:nth-child(2), td:nth-child(2) {
                     <th>
                       <p>LEAD NO</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="leadno" onkeyup="filterTable('leadno', 3)" placeholder="Filter by ID">
+                      <input type="text" style="width: 125px;" id="leadno" onkeyup="filterTable('leadno', 3)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>LEAD DATE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="leaddate" onkeyup="filterTable('leaddate', 4)" placeholder="Filter by ID">
+                      <input type="text" style="width: 125px;" id="leaddate" onkeyup="filterTable('leaddate', 4)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>ADDED DATE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="addeddate" onkeyup="filterTable('addeddate', 5)" placeholder="Filter by ID">
+                      <input type="text" style="width: 125px;" id="addeddate" onkeyup="filterTable('addeddate', 5)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>NAME</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="name" onkeyup="filterTable('name', 6)" placeholder="Filter by ID">
+                      <input type="text" id="name" onkeyup="filterTable('name', 6)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>TYPE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="type" onkeyup="filterTable('type', 7)" placeholder="Filter by ID">
+                      <input type="text" id="type" onkeyup="filterTable('type', 7)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>COURSE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="course" onkeyup="filterTable('course', 8)" placeholder="Filter by ID">
+                      <input type="text" id="course" onkeyup="filterTable('course', 8)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>EMAIL</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="email" onkeyup="filterTable('email', 9)" placeholder="Filter by ID">
+                      <input type="text" id="email" onkeyup="filterTable('email', 9)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>PLACE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="place" onkeyup="filterTable('place', 10)" placeholder="Filter by ID">
+                      <input type="text" id="place" onkeyup="filterTable('place', 10)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>REMARK</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="remark" onkeyup="filterTable('remark', 11)" placeholder="Filter by ID">
+                      <input type="text" id="remark" onkeyup="filterTable('remark', 11)" placeholder="Filter by ID">
                     </th>
                     <th>
                       <p>PHONE</p>
                       <!-- Filter input field for ID -->
-                      <input type="text" style="width: 50px;" id="phone" onkeyup="filterTable('phone', 12)" placeholder="Filter by ID">
+                      <input type="text" id="phone" onkeyup="filterTable('phone', 12)" placeholder="Filter by ID">
                     </th>
-                    <th class="text-center">
-                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                          <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
-                        </svg>
-                        <i class="bi bi-plus"></i>
-                    </th>
+                    {% if request.session.username == 'abdu' %}
+                      <th class="text-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                            <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+                          </svg>
+                          <i class="bi bi-plus"></i>
+                      </th>
+                    {% endif %}
 
                 </tr>
 
@@ -367,15 +369,17 @@ th:nth-child(2), td:nth-child(2) {
                     <td>{{i.remark}}</td>
                     <td>{{i.phone_no}}</td>
 
-                    <td>
-                        <a onclick="delopenPopup({{ i.id }})">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
-                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
-                              <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
-                            </svg>
-                        <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
+                    {% if request.session.username == 'abdu' %}
+                      <td>
+                          <a onclick="delopenPopup({{ i.id }})">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+                                <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
+                              </svg>
+                          <i class="bi bi-trash"></i>
+                          </a>
+                      </td>
+                    {% endif %}
 
                 </tr>
                 {% endfor %}
