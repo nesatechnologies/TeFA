@@ -691,9 +691,10 @@ def upload_csv(request):
                                         # Split the string by comma
                                         try:
                                             print("before split")
-                                            split_values = my_string.split('')
+                                            split_values = my_string.split(' ')
                                             first_value = split_values[0]
                                             print("after split")
+                                            
                                         except:
                                             first_value = my_string
                                             print("")
