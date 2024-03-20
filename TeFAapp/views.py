@@ -562,7 +562,8 @@ def upload_csv(request):
                     
 
                         # Format the datetime object in the desired format
-                        formatted_date = date_object.strftime("%Y-%m-%d")
+                        date_part = date_object.date()
+                        formatted_date = date_part.strftime("%Y-%m-%d")
                         print(formatted_date)
                         lead_given_date = formatted_date
                         print(lead_given_date)
@@ -621,7 +622,8 @@ def upload_csv(request):
                             
 
                         # Format the datetime object in the desired format
-                        formatted_date2 = date_object2.strftime("%Y-%m-%d")
+                        date_part2 = date_object2.date()
+                        formatted_date2 = date_part2.strftime("%Y-%m-%d")
                         print(formatted_date2)
                         initial_call_date = formatted_date2
                         print("11")
@@ -697,7 +699,8 @@ def upload_csv(request):
                                                 continue
                                     
                                         print("4")
-                                        formatted_date = date_object3.strftime("%Y-%m-%d")
+                                        date_part3 = date_object3.date()
+                                        formatted_date = date_part3.strftime("%Y-%m-%d")
                                         called_datetime = formatted_date
                                         print("5")
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
