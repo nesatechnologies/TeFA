@@ -687,28 +687,21 @@ def upload_csv(request):
                                         print("3")
                                         print(sublist[1])
                                         print(type(sublist[1]))
-                                        date_part3 = sublist[1].date()
-                                        print(date_part3)
-                                        print("______date_______")
 
                                         # Parse the date string into a datetime object
                                         formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                                         for date_format in formats_to_check:
                                             try:
                                                 # Attempt to parse the date string using the current format
-                                                date_object3 = datetime.strptime(date_part3, date_format)
+                                                date_object3 = datetime.strptime(sublist[1], date_format)
                                             except ValueError:
-                                                print("except part")
                                                 # If parsing fails, continue to the next format
                                                 continue
                                     
                                         print("4-followup")
-                                        print(date_object3)
-                                        # date_part3 = date_object3.date()
-                                        # print("########")
-                                        # print(date_part3)
-                                        formatted_date = date_object3.strftime("%Y-%m-%d")
-                                        print(formatted_date)
+                                        date_part3 = date_object3.date()
+                                        print(date_part3)
+                                        formatted_date = date_part3.strftime("%Y-%m-%d")
                                         called_datetime = formatted_date
                                         print("5")
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
