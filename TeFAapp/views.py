@@ -115,7 +115,7 @@ def denied(request):
     if 'username' in request.session:
         data = Calldetails.objects.filter(lead__status=3).order_by('-id')
         ## pagination part
-        paginator = Paginator(data, 2)  # Show 10 items per page
+        paginator = Paginator(data, 50)  # Show 10 items per page
         page = request.GET.get('page')
         try:
             data = paginator.page(page)
@@ -2109,6 +2109,7 @@ def edit(request, id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
+            remark = request.POST['remark']
             try:
                 status = request.POST['status']
             except:
@@ -2121,7 +2122,7 @@ def edit(request, id):
             else:
                 course_type = course_types
 
-            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type, status=status)
+            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type, status=status, remark=remark)
             print("post part")
             # Redirect to the home page with refresh parameter
             return redirect('/')
