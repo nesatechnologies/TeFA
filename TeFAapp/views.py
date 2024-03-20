@@ -687,18 +687,36 @@ def upload_csv(request):
                                         print("3")
                                         print(sublist[1])
                                         print(type(sublist[1]))
+                                        my_string = sublist[1]
+                                        # Split the string by comma
+                                        try:
+                                            print("before split")
+                                            split_values = my_string.split('')
+                                            first_value = split_values[0]
+                                            print("after split")
+                                        except:
+                                            first_value = my_string
+                                            print("")
+
+                                        # Get the first value from the list
+                                        
+                                        print("_____first_value_____")
+                                        print(first_value)
 
                                         # Parse the date string into a datetime object
                                         formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                                         for date_format in formats_to_check:
                                             try:
                                                 # Attempt to parse the date string using the current format
-                                                date_object3 = datetime.strptime(sublist[1], date_format)
+                                                date_object3 = datetime.strptime(first_value, date_format)
                                             except ValueError:
                                                 # If parsing fails, continue to the next format
                                                 continue
                                     
                                         print("4-followup")
+                                    
+                                        print(date_object3)
+                                       
                                         date_part3 = date_object3.date()
                                         print(date_part3)
                                         formatted_date = date_part3.strftime("%Y-%m-%d")
