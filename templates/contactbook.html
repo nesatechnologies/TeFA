@@ -248,7 +248,7 @@
                         </svg>
                         <i class="bi bi-plus"></i>
                     </th>
-                    {% if request.session.username == 'abdu' %}
+                    {% if request.session.username == 'admin' %}
                         <th>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
                             <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
@@ -265,7 +265,11 @@
                     <th>
                         <p>STATUS</p>
                         <!-- Filter input field for STATUS -->
-                        <input type="text" style="width: 125px;" id="status" onkeyup="filterTable('status', 15)" placeholder="Filter by STATUS">
+                        {% if request.session.username == 'admin' %}
+                            <input type="text" style="width: 125px;" id="status" onkeyup="filterTable('status', 15)" placeholder="Filter by STATUS">
+                        {% else %}
+                            <input type="text" style="width: 125px;" id="status" onkeyup="filterTable('status', 14)" placeholder="Filter by STATUS">
+                        {% endif %}
                     </th>
                 </tr>
 
@@ -295,7 +299,7 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </td>
-                        {% if request.session.username == 'abdu' %}
+                        {% if request.session.username == 'admin' %}
                             <td>
                                 <a onclick="delopenPopup({{ i.id }})">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -345,7 +349,7 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </td>
-                        {% if request.session.username == 'abdu' %}
+                        {% if request.session.username == 'admin' %}
                             <td>
                                 <a onclick="delopenPopup({{ i.id }})">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -388,7 +392,7 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </td>
-                        {% if request.session.username == 'abdu' %}
+                        {% if request.session.username == 'admin' %}
                             <td>
                                 <a onclick="delopenPopup({{ i.id }})">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
@@ -436,7 +440,7 @@
                                 <i class="bi bi-pencil-square"></i>
                             </a>
                         </td>
-                        {% if request.session.username == 'abdu' %}
+                        {% if request.session.username == 'admin' %}
                             <td>
                                 <a onclick="delopenPopup({{ i.id }})">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
