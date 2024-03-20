@@ -15,7 +15,7 @@ class Lead(models.Model):
     name = models.CharField(max_length= 50)
     course_type = models.CharField(max_length=20, default="")
     course = models.CharField(max_length=50)
-    phone_no = models.IntegerField()
+    phone_no = models.CharField(max_length=50, default="")
     email = models.EmailField(max_length=30)
     place = models.CharField(max_length=50)
     remark = models.CharField(max_length=250)
