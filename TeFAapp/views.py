@@ -698,8 +698,9 @@ def upload_csv(request):
                                                 # If parsing fails, continue to the next format
                                                 continue
                                     
-                                        print("4")
+                                        print("4-followup")
                                         date_part3 = date_object3.date()
+                                        print(date_part3)
                                         formatted_date = date_part3.strftime("%Y-%m-%d")
                                         called_datetime = formatted_date
                                         print("5")
