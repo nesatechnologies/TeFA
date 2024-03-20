@@ -548,6 +548,22 @@ def upload_csv(request):
                         print("***************")
                         print(date_string)
                         print("***************")
+                        my_string = date_string
+                        # Split the string by comma
+                        try:
+                            print("before split")
+                            split_values = my_string.split(' ')
+                            first_value = split_values[0]
+                            print("after split")
+                            
+                        except:
+                            first_value = my_string
+                            print("")
+
+                        # Get the first value from the list
+                        
+                        print("_____first_value_____")
+                        print(first_value)
 
 
                         # Parse the date string into a datetime object
@@ -555,7 +571,7 @@ def upload_csv(request):
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
-                                date_object = datetime.strptime(date_string, date_format)
+                                date_object = datetime.strptime(first_value, date_format)
                             except ValueError:
                                 # If parsing fails, continue to the next format
                                 continue
@@ -610,12 +626,28 @@ def upload_csv(request):
                         print("***************")
                         
                         print("10")
+                        my_string2 = date_string2
+                        # Split the string by comma
+                        try:
+                            print("before split2")
+                            split_values = my_string2.split(' ')
+                            first_value2 = split_values[0]
+                            print("after split2")
+                            
+                        except:
+                            first_value2 = my_string2
+                            print("")
+
+                        # Get the first value from the list
+                        
+                        print("_____first_value2_____")
+                        print(first_value2)
                         # Parse the date string into a datetime object
                         formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
-                                date_object2 = datetime.strptime(date_string2, date_format)
+                                date_object2 = datetime.strptime(first_value2, date_format)
                             except ValueError:
                                 # If parsing fails, continue to the next format
                                 continue
@@ -687,29 +719,29 @@ def upload_csv(request):
                                         print("3")
                                         print(sublist[1])
                                         print(type(sublist[1]))
-                                        my_string = sublist[1]
+                                        my_string3 = sublist[1]
                                         # Split the string by comma
                                         try:
-                                            print("before split")
-                                            split_values = my_string.split(' ')
-                                            first_value = split_values[0]
-                                            print("after split")
+                                            print("before split3")
+                                            split_values = my_string3.split(' ')
+                                            first_value3 = split_values[0]
+                                            print("after split3")
                                             
                                         except:
-                                            first_value = my_string
+                                            first_value3 = my_string3
                                             print("")
 
                                         # Get the first value from the list
                                         
-                                        print("_____first_value_____")
-                                        print(first_value)
+                                        print("_____first_value3_____")
+                                        print(first_value3)
 
                                         # Parse the date string into a datetime object
                                         formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                                         for date_format in formats_to_check:
                                             try:
                                                 # Attempt to parse the date string using the current format
-                                                date_object3 = datetime.strptime(first_value, date_format)
+                                                date_object3 = datetime.strptime(first_value3, date_format)
                                             except ValueError:
                                                 # If parsing fails, continue to the next format
                                                 continue
