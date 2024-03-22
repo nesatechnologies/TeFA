@@ -149,6 +149,10 @@ th:nth-child(2), td:nth-child(2) {
         <small class="inline-block"><a href="{% url 'need_followingseeall' %}"><button id="seeAllBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: block;">See All</button></a></small>
 
         <small class="inline-block"><a href="{% url 'need_following' %}"><button id="viewLessBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: none;">View Less</button></a></small>
+
+        <small class="inline-block"><a href="{% url 'priorityonBtn' %}"><button id="priorityonBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: block;">Priority ON</button></a></small>
+
+        <small class="inline-block"><a href="{% url 'need_following' %}"><button id="priorityoffBtn" style="background-color: #1b1c1c; color: rgb(195, 196, 196); display: none;">Priority OFF</button></a></small>
         
         <br>
         <br>
@@ -383,6 +387,9 @@ document.addEventListener("DOMContentLoaded", function() {
     var seeAllBtn = document.getElementById("seeAllBtn");
     var viewLessBtn = document.getElementById("viewLessBtn");
 
+    var priorityonBtn = document.getElementById("priorityonBtn");
+    var priorityoffBtn = document.getElementById("priorityoffBtn");
+
     console.log(seeAllBtn);
     console.log(viewLessBtn);
 
@@ -402,6 +409,25 @@ document.addEventListener("DOMContentLoaded", function() {
         // Hide the "View Less" button and show the "See All" button
         seeAllBtn.style.display = "block";
         viewLessBtn.style.display = "none";
+
+        
+    }
+
+    if (lastPart.trim() === "priorityonBtn") {
+        // Hide the "See All" button and show the "View Less" button
+        priorityonBtn.style.display = "none";
+        priorityoffBtn.style.display = "block";
+
+        // Hide the pagination
+        var paginationDiv = document.querySelector(".container1");
+        if (paginationDiv) {
+            paginationDiv.style.display = "none";
+        }
+
+    } else {
+        // Hide the "View Less" button and show the "See All" button
+        priorityonBtn.style.display = "block";
+        priorityoffBtn.style.display = "none";
 
         
     }

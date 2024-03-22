@@ -112,6 +112,13 @@ def need_followingseeall(request):
         return render(request, 'need_following.html', {'data':data})
     else:
         return redirect('/')
+def priorityonBtn(request):
+    if 'username' in request.session:
+        data = Calldetails.objects.filter(lead__priority=1).order_by('-id')
+        data1 = Calldetails.objects.filter(lead__priority=0).order_by('-id')
+        return render(request, 'need_following.html', {'data':data,'data1':data1})
+    else:
+        return redirect('/')
 def denied(request):
     if 'username' in request.session:
         data = Calldetails.objects.filter(lead__status=3).order_by('-id')

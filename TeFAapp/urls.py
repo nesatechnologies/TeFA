@@ -10,6 +10,7 @@ urlpatterns = [
     path('conformedviewall/', views.conformedviewall, name='conformedviewall'),
     path('need_following/', views.need_following, name='need_following'),
     path('need_followingseeall/', views.need_followingseeall, name='need_followingseeall'),
+    path('priorityonBtn/', views.priorityonBtn, name='priorityonBtn'),
     path('denied/', views.denied, name='denied'),
     path('deniedviewall/', views.deniedviewall, name='deniedviewall'),
     path('add_customer/', views.add_customer, name='add_customer'),
