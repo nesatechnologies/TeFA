@@ -31,4 +31,5 @@ urlpatterns = [
     path('denied_export_to_excel/', views.denied_export_to_excel, name='denied_export_to_excel'),
     path('single_person_export_to_excel/<int:id>', views.single_person_export_to_excel, name='single_person_export_to_excel'),
     path('edit/<int:id>/', views.edit, name='edit'),
+    path('update_priority/', views.update_priority, name='update_priority'),
     ]

@@ -23,6 +23,7 @@ from django.template.loader import render_to_string
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import pandas as pd
 import io
+from django.http import JsonResponse
 
 # Create your views here.
 @session_login_required
@@ -2131,5 +2132,25 @@ def edit(request, id):
         return render(request,'edit.html',{'data':data,'coursedata':coursedata})
     else:
         return redirect('/')
+    
+def update_priority(request):
+    print("%%%^^^&&&&&&&&&&")
+    # if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
+        priority = request.POST.get('priority')
+        person_id = request.POST.get('person_id')
 
+        print(f"person_id- {person_id}")
+        print(f"priority- {priority}")
+        
+        # Update the priority in your model
+        try:
+            person = Lead.objects.get(id=person_id)
+            print(person.control_no)
+            person.priority = priority
+            person.save()
+            return JsonResponse({'message': 'Priority updated successfully'}, status=200)
+        except Lead.DoesNotExist:
+            return JsonResponse({'message': 'Person not found'}, status=404)
 
+    return JsonResponse({'error': 'Invalid request'}, status=400)
