@@ -30,7 +30,7 @@
 <body>
     <div class="container">
         <div class="container1">
-            <h4 style="text-align: center; color: black;">INITIAL CALL</h4>
+            <h4 style="text-align: center; color: black;">FOLLOWUP CALL</h4>
         </div>
         <br>
         {% for i in data %}
@@ -44,28 +44,47 @@
                             <input type="text" class="form-control custom-input" name="control_no" value="{{i.lead.control_no}}" disabled> <br>
 
                             {% if i.lead.name %}
-                                <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" disabled><br>
+                                    <input type="hidden" name="name" value="{{i.lead.name}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.name is not available -->
                                 <input type="text" class="form-control custom-input" name="name1" placeholder="Enter the Name"><br>
                             {% endif %}
 
                             {% if i.lead.phone_no %}
-                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required disabled><br>
+                                    <input type="hidden" name="phone_no" value="{{i.lead.phone_no}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.phone_no is not available -->
                                 <input type="text" class="form-control custom-input" name="phone_no" placeholder="Enter the Phone" required><br>
                             {% endif %}
 
                             {% if i.lead.email %}
-                                <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" disabled><br>
+                                    <input type="hidden" name="email" value="{{i.lead.email}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
                                 <input type="text" class="form-control custom-input" name="email" placeholder="Enter the Email"><br>
                             {% endif %}
-
                             {% if i.lead.degree %}
-                                <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" disabled><br>
+                                    <input type="hidden" name="degree" value="{{i.lead.degree}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
                                 <input type="text" class="form-control custom-input" name="degree" placeholder="Enter the Qualification"><br>
@@ -104,7 +123,12 @@
                             {% endif %}
 
                             {% if i.lead.place %}
-                                <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" disabled><br>
+                                    <input type="hidden" name="place" value="{{i.lead.place}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.place is not available -->
                                 <input type="text" class="form-control custom-input" name="place" placeholder="Enter the Place"><br>
@@ -151,6 +175,8 @@
                             <select name="called_meadium" class="form-control custom-input" id="called_meadium">
                                 <option value="phone">Phone</option>
                                 <option value="email">Email</option>
+                                <option value="message">message</option>
+                                <option value="others">others</option>
                             </select><br>
                             <select name="status" class="form-control custom-input" id="status">
                                 <option value="1">CONFORMED</option>

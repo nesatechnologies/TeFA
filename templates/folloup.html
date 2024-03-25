@@ -30,43 +30,73 @@
 <body>
     <div class="container">
         <div class="container1">
-            <h4 style="text-align: center; color: black;">INITIAL CALL</h4>
+            <h4 style="text-align: center; color: black;">FOLLOWUP CALL</h4>
             
         </div>
         <br>
         {% for i in data %}
+            <br>
             <form id="followformdynamic" method="post">
                 {% csrf_token %}
                 <div class="row">
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                        
+                            <!-- <a href="javascript:void(0);" onclick="updatePriority('{{ i.lead.id }}')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="gold" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                </svg>
+                                <i class="bi bi-star-fill"></i>
+                            </a> -->
+                        
+                        <br><br>
                         <div class="form-container">
                             <p style="color: black;">STUDENT PART</p>
                             <input type="hidden" name="personId" id="personId" value="{{i.id}}">
                             <input type="text" class="form-control custom-input" name="control_no" value="{{i.lead.control_no}}" disabled><br>
 
                             {% if i.lead.name %}
-                                <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="name1" value="{{i.lead.name}}" disabled><br>
+                                    <input type="hidden" name="name1" value="{{i.lead.name}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.name is not available -->
                                 <input type="text" class="form-control custom-input" name="name1" placeholder="Enter the Name"><br>
                             {% endif %}
 
                             {% if i.lead.phone_no %}
-                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="phone_no" value="{{i.lead.phone_no}}" required disabled><br>
+                                    <input type="hidden" name="phone_no" value="{{i.lead.phone_no}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.phone_no is not available -->
                                 <input type="text" class="form-control custom-input" name="phone_no" placeholder="Enter the Phone" required><br>
                             {% endif %}
 
                             {% if i.lead.email %}
-                                <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="email" value="{{i.lead.email}}" disabled><br>
+                                    <input type="hidden" name="email" value="{{i.lead.email}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
                                 <input type="text" class="form-control custom-input" name="email" placeholder="Enter the Email"><br>
                             {% endif %}
 
                             {% if i.lead.degree %}
-                                <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="degree" value="{{i.lead.degree}}" disabled><br>
+                                    <input type="hidden" name="degree" value="{{i.lead.degree}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.email is not available -->
                                 <input type="text" class="form-control custom-input" name="degree" placeholder="Enter the Qualification"><br>
@@ -105,7 +135,12 @@
                             {% endif %}
 
                             {% if i.lead.place %}
-                                <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
+                                {% if request.session.username == 'admin' %}
+                                    <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" ><br>
+                                {% else %}
+                                    <input type="text" class="form-control custom-input" name="place" value="{{i.lead.place}}" disabled><br>
+                                    <input type="hidden" name="place" value="{{i.lead.place}}">
+                                {% endif %}
                             {% else %}
                                 <!-- Handle the case where i.place is not available -->
                                 <input type="text" class="form-control custom-input" name="place" placeholder="Enter the Place"><br>
@@ -136,7 +171,7 @@
                         <br>
                     <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center"> 
                         <a href="{% url 'single_person_export_to_excel' i.id %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="black" class="bi bi-download" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="black" class="bi bi-download" viewBox="0 0 16 16">
                             <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"/>
                             <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"/>
                             </svg>
@@ -156,6 +191,8 @@
                             <select name="called_meadium" class="form-control custom-input" id="called_meadium">
                                 <option value="phone">Phone</option>
                                 <option value="email">Email</option>
+                                <option value="message">message</option>
+                                <option value="others">others</option>
                             </select><br>
                             <select name="status" class="form-control custom-input" id="status">
                                 <option value="1">CONFORMED</option>
@@ -214,6 +251,79 @@
 
 
 <script>
+    function updatePriority(id) {
+    newPriority='{{ i.lead.priority }}'
+    var csrftoken = getCookie('csrftoken'); // Function to get CSRF token from cookies
+    alert(newPriority)
+    console.log(newPriority)
+
+    newPriority = newPriority === '1' ? '0' : '1';
+    console.log(newPriority)
+
+
+
+    if (newPriority === 1) {
+                // Set the star to filled
+                $('#' + id + ' .bi-star').addClass('bi-star-fill');
+            } else {
+                // Set the star to outline
+                $('#' + id + ' .bi-star-fill').removeClass('bi-star-fill');
+            }
+
+    // Send an AJAX request to update the priority
+    console.log("%%%%%% updatePriority %%%%%%");
+    console.log(id);
+    console.log(newPriority);
+    $.ajax({
+        url: `/update_priority/`,
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken }, // Include CSRF token in headers
+        data: {
+            'priority': newPriority,
+            'person_id': id
+        },
+        success: function(response) {
+            alert("successssssssss......");
+            // Update the priority value on the frontend
+            if (newPriority === 1) {
+                document.getElementById('priorityStatus').innerHTML="In Priority"
+                // Set the star to filled
+                $('#' + id + ' .bi-star').addClass('bi-star-fill');
+            } else {
+                document.getElementById('priorityStatus').innerHTML="Not in Priority"
+                // Set the star to outline
+                $('#' + id + ' .bi-star-fill').removeClass('bi-star-fill');
+            }
+            // Update the priority value in your data without refreshing the page
+            // You may need to update the priority value in your data object dynamically
+            // based on the response from the server
+        },
+        error: function(xhr, status, error) {
+            console.error('Error updating priority:', error);
+        }
+    });
+}
+
+// Function to get CSRF token from cookies
+function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        var cookies = document.cookie.split(';');
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+
+
+
    // Attach event listener to form submission
     $(document).on('submit', '#followformdynamic', function(event) {
         console.log("Form submission event triggered");

@@ -42,28 +42,48 @@
 
 
                         {% if i.name %}
-                            <input type="text" class="form-control custom-input" name="name1" value="{{i.name}}" ><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="name1" value="{{i.name}}" ><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="name1" value="{{i.name}}" disabled><br>
+                                <input type="hidden" name="name1" value="{{i.name}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.name is not available -->
                             <input type="text" class="form-control custom-input" name="name1" placeholder="Enter the Name"><br>
                         {% endif %}
 
                         {% if i.phone_no %}
-                            <input type="text" class="form-control custom-input" name="phone_no" value="{{i.phone_no}}" required><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.phone_no}}" required><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="phone_no" value="{{i.phone_no}}" required disabled><br>
+                                <input type="hidden" name="phone_no" value="{{i.phone_no}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.phone_no is not available -->
                             <input type="text" class="form-control custom-input" name="phone_no" placeholder="Enter the Phone" required><br>
                         {% endif %}
 
                         {% if i.email %}
-                            <input type="text" class="form-control custom-input" name="email" value="{{i.email}}" ><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="email" value="{{i.email}}" ><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="email" value="{{i.email}}" disabled><br>
+                                <input type="hidden" name="email" value="{{i.email}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.email is not available -->
                             <input type="text" class="form-control custom-input" name="email" placeholder="Enter the Email"><br>
                         {% endif %}
 
                         {% if i.degree %}
-                            <input type="text" class="form-control custom-input" name="degree" value="{{i.degree}}" ><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="degree" value="{{i.degree}}" ><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="degree" value="{{i.degree}}" disabled><br>
+                                <input type="hidden" name="degree" value="{{i.degree}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.email is not available -->
                             <input type="text" class="form-control custom-input" name="degree" placeholder="Enter the Qualification"><br>
@@ -102,24 +122,39 @@
                         {% endif %}
 
                         {% if i.place %}
-                            <input type="text" class="form-control custom-input" name="place" value="{{i.place}}" ><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="place" value="{{i.place}}" ><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="place" value="{{i.place}}" disabled><br>
+                                <input type="hidden" name="place" value="{{i.place}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.place is not available -->
                             <input type="text" class="form-control custom-input" name="place" placeholder="Enter the Place"><br>
                         {% endif %}
 
                         {% if i.source %}
-                            <input type="text" class="form-control custom-input" name="source" value="{{i.source}}" ><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="source" value="{{i.source}}" ><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="source" value="{{i.source}}" disabled><br>
+                                <input type="hidden" name="source" value="{{i.source}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.email is not available -->
                             <input type="text" class="form-control custom-input" name="source" placeholder="source not available"><br>
                         {% endif %}
 
                         {% if i.remark %}
-                            <input type="text" class="form-control custom-input" name="remark" value="{{i.remark}}" disabled><br>
+                            {% if request.session.username == 'admin' %}
+                                <input type="text" class="form-control custom-input" name="remark" value="{{i.remark}}"><br>
+                            {% else %}
+                                <input type="text" class="form-control custom-input" name="remark" value="{{i.remark}}" disabled><br>
+                                <input type="hidden" name="remark" value="{{i.remark}}">
+                            {% endif %}
                         {% else %}
                             <!-- Handle the case where i.remark is not available -->
-                            <input type="text" class="form-control custom-input" name="remark" placeholder="remark not available" disabled><br>
+                            <input type="text" class="form-control custom-input" name="remark" placeholder="remark not available"><br>
                         {% endif %}
 
                         {% if i.status != 0 %}

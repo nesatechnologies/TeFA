@@ -21,6 +21,9 @@ from openpyxl.styles import Alignment
 from django.template.loader import render_to_string
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import pandas as pd
+import io
+from django.http import JsonResponse
 
 # Create your views here.
 @session_login_required
@@ -109,11 +112,18 @@ def need_followingseeall(request):
         return render(request, 'need_following.html', {'data':data})
     else:
         return redirect('/')
+def priorityonBtn(request):
+    if 'username' in request.session:
+        data = Calldetails.objects.filter(lead__priority=1).order_by('-id')
+        data1 = Calldetails.objects.filter(lead__priority=0).order_by('-id')
+        return render(request, 'need_following.html', {'data':data,'data1':data1})
+    else:
+        return redirect('/')
 def denied(request):
     if 'username' in request.session:
         data = Calldetails.objects.filter(lead__status=3).order_by('-id')
         ## pagination part
-        paginator = Paginator(data, 2)  # Show 10 items per page
+        paginator = Paginator(data, 50)  # Show 10 items per page
         page = request.GET.get('page')
         try:
             data = paginator.page(page)
@@ -160,6 +170,7 @@ def add_customer(request):
                 control_no = last_row.control_no
                 control_no += 1
             else:
+                ##### if table is empty give default starting value is given here...
                 print("Table is empty")
                 control_no = 5000
 
@@ -175,7 +186,6 @@ def add_customer(request):
             date_object = datetime.strptime(date_string, "%Y-%m-%d")
             # Get the English month name first three letters using %b
             english_month = date_object.strftime("%b")
-            # print("English month:", english_month)
 
             #### year last two digit taking part
             # Parse the date string
@@ -216,7 +226,9 @@ def add_customer(request):
                             # in the case of previous and new lend date month & year same
                             bfore_lead_no= last_row.lead_no
                             # taking number from previous lend no from last position and add 1 to it
-                            a = bfore_lead_no[-1]
+                            lead_array = bfore_lead_no.split('-')
+                            lead_spe_val = lead_array[-1]
+                            a = lead_spe_val[1:]
                             val = int(a) + 1
                             lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
             else:
@@ -273,37 +285,38 @@ def login(request):
                 request.session['uid'] = data['id']
                 return redirect('home')
             else:
-                return render(request, 'register.html')
+                messages.info(request, "enter valid inputs")
+                return redirect('login')
         else:
             messages.info(request, "enter all inputs")
             return redirect('login')
     return render(request, 'login.html')
 
-def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        name = request.POST['name']
-        empid = request.POST['empid']
-        password = request.POST['password']
-        cpassword = request.POST['cpassword']
-        if username != '' and password != '' and cpassword !='' and empid !='' and name !='':
-            if password == cpassword:
-                if Employee_details.objects.filter(user_name=username).exists():
-                    messages.info(request, "username is Already taken")
-                elif Employee_details.objects.filter(emp_id=empid).exists():
-                    messages.info(request, "Employee id is Already taken")
-                else:
-                    user = Employee_details(user_name=username,password=password,name=name,emp_id=empid)
-                    user.save()
-                    messages.info(request, "login please")
-                    return redirect('/')
-            else:
-                messages.info(request, "passwords not matched")
-                return redirect('register')
-        else:
-            messages.info(request, "enter all inputs")
-            return redirect('register')
-    return render(request, 'register.html')
+# def register(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         name = request.POST['name']
+#         empid = request.POST['empid']
+#         password = request.POST['password']
+#         cpassword = request.POST['cpassword']
+#         if username != '' and password != '' and cpassword !='' and empid !='' and name !='':
+#             if password == cpassword:
+#                 if Employee_details.objects.filter(user_name=username).exists():
+#                     messages.info(request, "username is Already taken")
+#                 elif Employee_details.objects.filter(emp_id=empid).exists():
+#                     messages.info(request, "Employee id is Already taken")
+#                 else:
+#                     user = Employee_details(user_name=username,password=password,name=name,emp_id=empid)
+#                     user.save()
+#                     messages.info(request, "login please")
+#                     return redirect('/')
+#             else:
+#                 messages.info(request, "passwords not matched")
+#                 return redirect('register')
+#         else:
+#             messages.info(request, "enter all inputs")
+#             return redirect('register')
+#     return render(request, 'register.html')
 
 def logout(request):
     del request.session['name']
@@ -516,14 +529,19 @@ def followup_actions(request,id):
 def upload_csv(request):
     message = ""  # Default message
     csv_data = None  # Default CSV data
-    if request.method == 'POST' and request.FILES.get('csv_file'):
-        csv_file = request.FILES['csv_file']
-        if csv_file.name.endswith('.csv'):
+    if request.method == 'POST' and request.FILES.get('xlsx_file'):
+        doc_files = request.FILES['xlsx_file']
+
+        if doc_files.name.endswith('.xlsx'):
+            df = pd.read_excel(doc_files)
+            csv_file = df.to_csv(index=False)
+        # elif doc_files.name.endswith('.csv'):
+        #     csv_file = doc_files
             # Process the uploaded CSV file
             try:
                 # Decode and process the CSV file
-                decoded_file = csv_file.read().decode('utf-8')
-                csv_data = csv.reader(decoded_file.splitlines())
+                csv_data = io.StringIO(csv_file)
+                csv_data = csv.reader(csv_data)
                 for row in csv_data:
                     # Process each row of the CSV file
                     if row[0] == 'SL.NO':
@@ -541,21 +559,38 @@ def upload_csv(request):
                         print("***************")
                         print(date_string)
                         print("***************")
+                        my_string = date_string
+                        # Split the string by comma
+                        try:
+                            print("before split")
+                            split_values = my_string.split(' ')
+                            first_value = split_values[0]
+                            print("after split")
+                            
+                        except:
+                            first_value = my_string
+                            print("")
+
+                        # Get the first value from the list
+                        
+                        print("_____first_value_____")
+                        print(first_value)
 
 
                         # Parse the date string into a datetime object
-                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
-                                date_object = datetime.strptime(date_string, date_format)
+                                date_object = datetime.strptime(first_value, date_format)
                             except ValueError:
                                 # If parsing fails, continue to the next format
                                 continue
                     
 
                         # Format the datetime object in the desired format
-                        formatted_date = date_object.strftime("%Y-%m-%d")
+                        date_part = date_object.date()
+                        formatted_date = date_part.strftime("%Y-%m-%d")
                         print(formatted_date)
                         lead_given_date = formatted_date
                         print(lead_given_date)
@@ -602,19 +637,36 @@ def upload_csv(request):
                         print("***************")
                         
                         print("10")
+                        my_string2 = date_string2
+                        # Split the string by comma
+                        try:
+                            print("before split2")
+                            split_values = my_string2.split(' ')
+                            first_value2 = split_values[0]
+                            print("after split2")
+                            
+                        except:
+                            first_value2 = my_string2
+                            print("")
+
+                        # Get the first value from the list
+                        
+                        print("_____first_value2_____")
+                        print(first_value2)
                         # Parse the date string into a datetime object
-                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                         for date_format in formats_to_check:
                             try:
                                 # Attempt to parse the date string using the current format
-                                date_object2 = datetime.strptime(date_string2, date_format)
+                                date_object2 = datetime.strptime(first_value2, date_format)
                             except ValueError:
                                 # If parsing fails, continue to the next format
                                 continue
                             
 
                         # Format the datetime object in the desired format
-                        formatted_date2 = date_object2.strftime("%Y-%m-%d")
+                        date_part2 = date_object2.date()
+                        formatted_date2 = date_part2.strftime("%Y-%m-%d")
                         print(formatted_date2)
                         initial_call_date = formatted_date2
                         print("11")
@@ -678,19 +730,40 @@ def upload_csv(request):
                                         print("3")
                                         print(sublist[1])
                                         print(type(sublist[1]))
+                                        my_string3 = sublist[1]
+                                        # Split the string by comma
+                                        try:
+                                            print("before split3")
+                                            split_values = my_string3.split(' ')
+                                            first_value3 = split_values[0]
+                                            print("after split3")
+                                            
+                                        except:
+                                            first_value3 = my_string3
+                                            print("")
+
+                                        # Get the first value from the list
+                                        
+                                        print("_____first_value3_____")
+                                        print(first_value3)
 
                                         # Parse the date string into a datetime object
-                                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y"]
+                                        formats_to_check = ["%d/%m/%y", "%d/%m/%Y", "%d-%m-%y", "%d-%m-%Y", "%Y-%m-%d", "%y-%m-%d"]
                                         for date_format in formats_to_check:
                                             try:
                                                 # Attempt to parse the date string using the current format
-                                                date_object3 = datetime.strptime(sublist[1], date_format)
+                                                date_object3 = datetime.strptime(first_value3, date_format)
                                             except ValueError:
                                                 # If parsing fails, continue to the next format
                                                 continue
                                     
-                                        print("4")
-                                        formatted_date = date_object3.strftime("%Y-%m-%d")
+                                        print("4-followup")
+                                    
+                                        print(date_object3)
+                                       
+                                        date_part3 = date_object3.date()
+                                        print(date_part3)
+                                        formatted_date = date_part3.strftime("%Y-%m-%d")
                                         called_datetime = formatted_date
                                         print("5")
                                         data3 = Folloup(calldetails=calldetails, remark=remark, calls_made=calls_made,
@@ -2047,6 +2120,7 @@ def edit(request, id):
             place = request.POST['place']
             source = request.POST['source']
             degree = request.POST['degree']
+            remark = request.POST['remark']
             try:
                 status = request.POST['status']
             except:
@@ -2059,7 +2133,7 @@ def edit(request, id):
             else:
                 course_type = course_types
 
-            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type, status=status)
+            Lead.objects.filter(id=id).update(name=name, course=course, phone_no=phone_no, email=email, place=place, source=source, degree=degree, course_type=course_type, status=status, remark=remark)
             print("post part")
             # Redirect to the home page with refresh parameter
             return redirect('/')
@@ -2068,5 +2142,25 @@ def edit(request, id):
         return render(request,'edit.html',{'data':data,'coursedata':coursedata})
     else:
         return redirect('/')
+    
+def update_priority(request):
+    print("%%%^^^&&&&&&&&&&")
+    # if request.method == 'POST' and request.is_ajax():
+    if request.method == 'POST':
+        priority = request.POST.get('priority')
+        person_id = request.POST.get('person_id')
 
+        print(f"person_id- {person_id}")
+        print(f"priority- {priority}")
+        
+        # Update the priority in your model
+        try:
+            person = Lead.objects.get(id=person_id)
+            print(person.control_no)
+            person.priority = priority
+            person.save()
+            return JsonResponse({'message': 'Priority updated successfully'}, status=200)
+        except Lead.DoesNotExist:
+            return JsonResponse({'message': 'Person not found'}, status=404)
 
+    return JsonResponse({'error': 'Invalid request'}, status=400)
