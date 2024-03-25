@@ -285,37 +285,38 @@ def login(request):
                 request.session['uid'] = data['id']
                 return redirect('home')
             else:
-                return render(request, 'register.html')
+                messages.info(request, "enter valid inputs")
+                return redirect('login')
         else:
             messages.info(request, "enter all inputs")
             return redirect('login')
     return render(request, 'login.html')
 
-def register(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        name = request.POST['name']
-        empid = request.POST['empid']
-        password = request.POST['password']
-        cpassword = request.POST['cpassword']
-        if username != '' and password != '' and cpassword !='' and empid !='' and name !='':
-            if password == cpassword:
-                if Employee_details.objects.filter(user_name=username).exists():
-                    messages.info(request, "username is Already taken")
-                elif Employee_details.objects.filter(emp_id=empid).exists():
-                    messages.info(request, "Employee id is Already taken")
-                else:
-                    user = Employee_details(user_name=username,password=password,name=name,emp_id=empid)
-                    user.save()
-                    messages.info(request, "login please")
-                    return redirect('/')
-            else:
-                messages.info(request, "passwords not matched")
-                return redirect('register')
-        else:
-            messages.info(request, "enter all inputs")
-            return redirect('register')
-    return render(request, 'register.html')
+# def register(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         name = request.POST['name']
+#         empid = request.POST['empid']
+#         password = request.POST['password']
+#         cpassword = request.POST['cpassword']
+#         if username != '' and password != '' and cpassword !='' and empid !='' and name !='':
+#             if password == cpassword:
+#                 if Employee_details.objects.filter(user_name=username).exists():
+#                     messages.info(request, "username is Already taken")
+#                 elif Employee_details.objects.filter(emp_id=empid).exists():
+#                     messages.info(request, "Employee id is Already taken")
+#                 else:
+#                     user = Employee_details(user_name=username,password=password,name=name,emp_id=empid)
+#                     user.save()
+#                     messages.info(request, "login please")
+#                     return redirect('/')
+#             else:
+#                 messages.info(request, "passwords not matched")
+#                 return redirect('register')
+#         else:
+#             messages.info(request, "enter all inputs")
+#             return redirect('register')
+#     return render(request, 'register.html')
 
 def logout(request):
     del request.session['name']
