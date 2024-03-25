@@ -170,6 +170,7 @@ def add_customer(request):
                 control_no = last_row.control_no
                 control_no += 1
             else:
+                ##### if table is empty give default starting value is given here...
                 print("Table is empty")
                 control_no = 5000
 
@@ -185,7 +186,6 @@ def add_customer(request):
             date_object = datetime.strptime(date_string, "%Y-%m-%d")
             # Get the English month name first three letters using %b
             english_month = date_object.strftime("%b")
-            # print("English month:", english_month)
 
             #### year last two digit taking part
             # Parse the date string
@@ -226,7 +226,9 @@ def add_customer(request):
                             # in the case of previous and new lend date month & year same
                             bfore_lead_no= last_row.lead_no
                             # taking number from previous lend no from last position and add 1 to it
-                            a = bfore_lead_no[-1]
+                            lead_array = bfore_lead_no.split('-')
+                            lead_spe_val = lead_array[-1]
+                            a = lead_spe_val[1:]
                             val = int(a) + 1
                             lead_no = english_month + '-' + last_two_digits_year + '-' + 'L' + str(val)
             else:
