@@ -114,7 +114,7 @@ def need_followingseeall(request):
         return redirect('/')
 def priorityonBtn(request):
     if 'username' in request.session:
-        data = Calldetails.objects.filter(lead__priority=1).order_by('-id')
+        data = Calldetails.objects.filter(lead__priority=1, lead__status=2).order_by('-id')
         data1 = Calldetails.objects.filter(lead__priority=0).order_by('-id')
         return render(request, 'need_following.html', {'data':data,'data1':data1})
     else:
@@ -945,7 +945,7 @@ def contactbook_detail_Report_export_to_excel(request):
 
         # Activate the first sheet
         ws = wb.active
-        ws.title = "Need following Data"
+        ws.title = "Detail_Report"
 
         # def get_folloup_headers(calldetail):
         #     """
@@ -1000,8 +1000,11 @@ def contactbook_detail_Report_export_to_excel(request):
         ]
         yellow_fill = PatternFill(start_color='fef2cb', end_color='fef2cb', fill_type='solid')  # Red fill
 
-        # Define white fill pattern
+        # Define green fill pattern
         green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
+
+        # Define Gold fill pattern
+        gold_fill = PatternFill(start_color='FFD700', end_color='FFD700', fill_type='solid')  # gold fill
 
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
@@ -1109,6 +1112,14 @@ def contactbook_detail_Report_export_to_excel(request):
 
             # Write the combined row to the worksheet
             ws.append(row)
+
+            # adding gold colour to the control no in proritised row
+            if calldetail.lead.priority == 1:
+                # Get the cell in the third column (index 2) of the current row
+                cell = ws.cell(row=k + 1, column=2)
+
+                # Apply the desired style to the cell
+                cell.fill = gold_fill
 
 
         ##### increase cell width ####
@@ -1270,6 +1281,9 @@ def need_following_export_to_excel(request):
         # Define white fill pattern
         green_fill = PatternFill(start_color='c5e0b3', end_color='c5e0b3', fill_type='solid')  # green fill
 
+        # Define Gold fill pattern
+        gold_fill = PatternFill(start_color='FFD700', end_color='FFD700', fill_type='solid')  # gold fill
+
         # Combine base headers and dynamically generated follow-up headers
         # headers = base_headers + sum([get_folloup_headers(calldetail) for calldetail in calldetails_data], [])
         headers = base_headers + sum([get_folloup_headers()], [])
@@ -1360,6 +1374,14 @@ def need_following_export_to_excel(request):
 
             # Write the combined row to the worksheet
             ws.append(row)
+
+            # adding gold colour to the control no in proritised row
+            if calldetail.lead.priority == 1:
+                # Get the cell in the third column (index 2) of the current row
+                cell = ws.cell(row=k + 1, column=2)
+
+                # Apply the desired style to the cell
+                cell.fill = gold_fill
 
 
         ##### increase cell width ####
